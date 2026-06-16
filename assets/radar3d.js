@@ -146,14 +146,16 @@ export function mountRadar3D(root, timeline) {
     }
     const anchor = (i, t) => { const a = -Math.PI / 2 + TAU * i / N; return new THREE.Vector3(Math.cos(a) * R * 1.16, Math.sin(a) * R * 1.16, (t - (M - 1) / 2) * DZ); };
 
-    // Fly the camera through OrbitControls' own angles (driving camera.position
-    // directly fights controls.update() and corrupts the head-on calc).
-    let fly = null;
-    const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    function flyTo(theta, phi) { controls.enabled = false; fly = { fromT: controls.getAzimuthalAngle(), fromP: controls.getPolarAngle(), toT: theta, toP: phi, r: camera.position.distanceTo(controls.target), t0: performance.now(), dur: 700 }; }
-    btnHead.addEventListener("click", () => flyTo(0, Math.PI / 2));        // head-on
-    btnOrbit.addEventListener("click", () => flyTo(0.95, 1.2));           // 3/4 orbit
-    controls.addEventListener("start", () => { fly = null; });            // user drag cancels a fly
+    // Snap to a view via spherical coords, then let OrbitControls own it (a
+    // per-frame fly fights controls.update() and blanks the scene). Drag-orbit
+    // is native; these buttons are shortcuts.
+    function snapTo(theta, phi) {
+      const r = camera.position.distanceTo(controls.target), si = Math.sin(phi);
+      camera.position.set(controls.target.x + r * si * Math.sin(theta), controls.target.y + r * Math.cos(phi), controls.target.z + r * si * Math.cos(theta));
+      camera.lookAt(controls.target); controls.update();
+    }
+    btnHead.addEventListener("click", () => snapTo(0, Math.PI / 2));   // head-on
+    btnOrbit.addEventListener("click", () => snapTo(0.95, 1.2));       // 3/4 orbit
     onSelect = () => rings.forEach(r => { r.material.opacity = r.userData.t === selected ? 1 : 0.7; });
 
     function resize() { const w = Math.max(280, sceneEl.clientWidth), h = Math.max(320, sceneEl.clientHeight); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
@@ -161,16 +163,10 @@ export function mountRadar3D(root, timeline) {
     resize();
 
     (function frame() {
-      if (fly) {
-        const p = clamp((performance.now() - fly.t0) / fly.dur, 0, 1), e = easeInOut(p);
-        const th = lerp(fly.fromT, fly.toT, e), ph = lerp(fly.fromP, fly.toP, e), si = Math.sin(ph);
-        camera.position.set(controls.target.x + fly.r * si * Math.sin(th), controls.target.y + fly.r * Math.cos(ph), controls.target.z + fly.r * si * Math.cos(th));
-        camera.lookAt(controls.target);
-        if (p >= 1) { fly = null; controls.enabled = true; }
-      }
       controls.update();
-      const dev = Math.hypot(controls.getAzimuthalAngle(), controls.getPolarAngle() - Math.PI / 2);
-      const op = clamp(1 - (dev - 0.12) / 0.5, 0, 1);
+      const off = camera.position.clone().sub(controls.target).normalize();
+      const dev = Math.acos(Math.min(1, Math.abs(off.z)));   // 0 = looking down the time axis (head-on)
+      const op = clamp(1 - dev / 0.6, 0, 1);
       overlay.style.opacity = op.toFixed(3); overlay.style.pointerEvents = op > 0.5 ? "auto" : "none";
       if (op > 0.001) {
         const w = sceneEl.clientWidth, h = sceneEl.clientHeight;
