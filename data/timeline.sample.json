@@ -1,0 +1,71 @@
+{
+  "title": "Sample visibility timeline (synthetic demo data)",
+  "axes": [
+    { "key": "access", "label": "Access" },
+    { "key": "crawl", "label": "Crawl / Index" },
+    { "key": "ia", "label": "IA / Links" },
+    { "key": "demand", "label": "Demand" },
+    { "key": "proof", "label": "Proof / EEAT" },
+    { "key": "authority", "label": "Authority" },
+    { "key": "local", "label": "Local" },
+    { "key": "aigeo", "label": "AI / GEO" },
+    { "key": "perf", "label": "Perf / UX" },
+    { "key": "trust", "label": "Trust" },
+    { "key": "cro", "label": "CRO" },
+    { "key": "attribution", "label": "Attribution" }
+  ],
+  "measurements": [
+    {
+      "timestamp": "2026-05-11",
+      "label": "Baseline scan",
+      "scores": { "access": 55, "crawl": 50, "ia": 48, "demand": 60, "proof": 52, "authority": 40, "local": 58, "aigeo": 35, "perf": 68, "trust": 70, "cro": 45, "attribution": 42 },
+      "changes": []
+    },
+    {
+      "timestamp": "2026-05-18",
+      "label": "Week 1",
+      "scores": { "access": 60, "crawl": 54, "ia": 50, "demand": 62, "proof": 55, "authority": 42, "local": 60, "aigeo": 38, "perf": 70, "trust": 72, "cro": 47, "attribution": 45 },
+      "changes": [
+        { "what": "Fixed robots/sitemap and submitted in GSC", "targets": ["access", "crawl"], "source": "action-queue#11", "status": "confirmed", "expected": "+" },
+        { "what": "Granted GA4 + Search Console read access", "targets": ["attribution"], "source": "action-queue#9", "status": "confirmed", "expected": "+" }
+      ]
+    },
+    {
+      "timestamp": "2026-05-25",
+      "label": "Week 2",
+      "scores": { "access": 64, "crawl": 60, "ia": 55, "demand": 64, "proof": 58, "authority": 44, "local": 61, "aigeo": 40, "perf": 72, "trust": 73, "cro": 50, "attribution": 48 },
+      "changes": [
+        { "what": "Internal-linking pass across 30 money pages", "targets": ["ia", "crawl"], "source": "second-pass-actions#4", "status": "confirmed", "expected": "+" },
+        { "what": "Added breadcrumb + Organization schema", "targets": ["proof", "trust"], "source": "action-queue#18", "status": "suggested", "expected": "+" }
+      ]
+    },
+    {
+      "timestamp": "2026-06-01",
+      "label": "Week 3",
+      "scores": { "access": 67, "crawl": 66, "ia": 60, "demand": 66, "proof": 62, "authority": 48, "local": 62, "aigeo": 45, "perf": 74, "trust": 74, "cro": 53, "attribution": 52 },
+      "changes": [
+        { "what": "Shipped 6 EEAT proof / case-study pages", "targets": ["proof", "authority"], "source": "causal-hypotheses#7", "status": "confirmed", "expected": "+" },
+        { "what": "Author bios + credentials on key pages", "targets": ["proof"], "source": "action-queue#22", "status": "confirmed", "expected": "+" }
+      ]
+    },
+    {
+      "timestamp": "2026-06-08",
+      "label": "Week 4",
+      "scores": { "access": 69, "crawl": 69, "ia": 64, "demand": 70, "proof": 66, "authority": 52, "local": 63, "aigeo": 52, "perf": 76, "trust": 75, "cro": 55, "attribution": 55 },
+      "changes": [
+        { "what": "Earned 9 referring domains (PR + directories)", "targets": ["authority"], "source": "causal-hypotheses#12", "status": "confirmed", "expected": "+" },
+        { "what": "Published llms.txt + entity catalog for AI crawlers", "targets": ["aigeo"], "source": "action-queue#31", "status": "confirmed", "expected": "+" }
+      ]
+    },
+    {
+      "timestamp": "2026-06-15",
+      "label": "Week 5 (latest)",
+      "scores": { "access": 71, "crawl": 72, "ia": 66, "demand": 74, "proof": 70, "authority": 58, "local": 63, "aigeo": 62, "perf": 78, "trust": 76, "cro": 58, "attribution": 58 },
+      "changes": [
+        { "what": "FAQ schema on 8 high-intent pages", "targets": ["aigeo", "proof"], "source": "action-queue#37", "status": "confirmed", "expected": "+" },
+        { "what": "Ran buyer/bank prompts; cited in 6/55 (was 0)", "targets": ["aigeo"], "source": "causal-hypotheses#19", "status": "confirmed", "expected": "+" },
+        { "what": "GBP posts + 3 new reviews", "targets": ["local"], "source": "action-queue#40", "status": "suggested", "expected": "+" }
+      ]
+    }
+  ]
+}
