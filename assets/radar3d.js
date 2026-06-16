@@ -203,7 +203,7 @@ export function mountRadar3D(root, timeline) {
     const scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0xf8faf8, 9, 24);
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 0, 8.6);
+    camera.position.set(0, 0, 9.0);   // a touch further back: keeps face-on chips clear of the edges with DZ=1.3, and frames the labelled tube
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = false; controls.enablePan = false;
     controls.minDistance = 5; controls.maxDistance = 20; controls.target.set(0, 0, 0);
