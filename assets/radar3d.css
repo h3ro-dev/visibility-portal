@@ -25,7 +25,7 @@
   border: 1px solid var(--line); border-radius: 12px;
   min-height: 540px; min-width: 0; overflow: hidden; position: relative; touch-action: none;
 }
-.vp-canvas { display: block; inset: 0; position: absolute; }
+.vp-canvas { display: block; inset: 0; position: absolute; width: 100%; height: 100%; }
 
 .vp-overlay { inset: 0; position: absolute; transition: opacity 120ms ease; }
 .vp-axis {
