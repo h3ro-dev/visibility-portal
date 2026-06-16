@@ -206,17 +206,22 @@ export function mountRadar3D(root, timeline) {
     camera.position.set(0, 0, 8.6);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = false; controls.enablePan = false;
-    controls.minDistance = 4.5; controls.maxDistance = 16; controls.target.set(0, 0, 0);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.78));
-    const k = new THREE.DirectionalLight(0xffffff, 0.55); k.position.set(4, 6, 8); scene.add(k);
-    const rimL = new THREE.DirectionalLight(0xbfe3d4, 0.25); rimL.position.set(-5, -3, -6); scene.add(rimL);
+    controls.minDistance = 5; controls.maxDistance = 20; controls.target.set(0, 0, 0);
+    controls.rotateSpeed = 0.85; controls.zoomSpeed = 0.9;
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xdce8e1, 0.45));               // sky/ground wrap
+    const k = new THREE.DirectionalLight(0xffffff, 0.78); k.position.set(5, 8, 9); scene.add(k);
+    const fill = new THREE.DirectionalLight(0xeef5f0, 0.28); fill.position.set(-7, -2, 5); scene.add(fill);
+    const rimL = new THREE.DirectionalLight(0x8fccb8, 0.45); rimL.position.set(-5, 4, -8); scene.add(rimL);
 
-    const R = 2.2, DZ = 1.15, ZAXIS = new THREE.Vector3(0, 0, 1);
+    const R = 2.2, DZ = 1.3, ZAXIS = new THREE.Vector3(0, 0, 1);
+    const zOf = t => (t - (M - 1) / 2) * DZ;
     const vert = (i, t) => {
       const s = clamp(num(meas[t].scores[axes[i].key]), 0, 100), r = (s / 100) * R, a = -Math.PI / 2 + TAU * i / N;
       return new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, (t - (M - 1) / 2) * DZ);
     };
     const group = new THREE.Group(); scene.add(group);
+    const tealC = new THREE.Color(HEX.teal);
     for (let t = 0; t < M - 1; t++) {
       const pos = [];
       for (let i = 0; i < N; i++) {
@@ -224,17 +229,60 @@ export function mountRadar3D(root, timeline) {
         pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, a.x, a.y, a.z, c.x, c.y, c.z, d.x, d.y, d.z);
       }
       const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
-      group.add(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: HEX.teal, transparent: true, opacity: 0.16 + 0.12 * (t / Math.max(1, M - 2)), side: THREE.DoubleSide, roughness: 0.65, depthWrite: false })));
+      const segC = tealC.clone().lerp(new THREE.Color(bandHex(avgScore(t + 1))), 0.3);   // tint toward that window's health
+      group.add(new THREE.Mesh(g, new THREE.MeshStandardMaterial({
+        color: segC, emissive: segC, emissiveIntensity: 0.05, transparent: true,
+        opacity: 0.12 + 0.20 * (t / Math.max(1, M - 2)), side: THREE.DoubleSide, roughness: 0.5, metalness: 0, depthWrite: false,
+      })));
     }
-    const nodeGeo = new THREE.SphereGeometry(0.055, 16, 12);
+    const nodeGeo = new THREE.SphereGeometry(0.052, 16, 12);
+    const ringBase = t => 0.3 + 0.32 * (M > 1 ? t / (M - 1) : 1);   // older rings fainter, newest crisp
     const rings = [];
     for (let t = 0; t < M; t++) {
       const pts = []; for (let i = 0; i <= N; i++) pts.push(vert(i % N, t));
-      const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: bandHex(avgScore(t)), transparent: true, opacity: 0.7 }));
+      const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: bandHex(avgScore(t)), transparent: true, opacity: ringBase(t) }));
       ring.userData.t = t; rings.push(ring); group.add(ring);
-      for (let i = 0; i < N; i++) { const mm = new THREE.Mesh(nodeGeo, new THREE.MeshStandardMaterial({ color: bandHex(clamp(num(meas[t].scores[axes[i].key]), 0, 100)), roughness: 0.5 })); mm.position.copy(vert(i, t)); group.add(mm); }
+      for (let i = 0; i < N; i++) { const mm = new THREE.Mesh(nodeGeo, new THREE.MeshStandardMaterial({ color: bandHex(clamp(num(meas[t].scores[axes[i].key]), 0, 100)), roughness: 0.42 })); mm.position.copy(vert(i, t)); group.add(mm); }
     }
-    const anchor = (i, t) => { const a = -Math.PI / 2 + TAU * i / N; return new THREE.Vector3(Math.cos(a) * R * 1.16, Math.sin(a) * R * 1.16, (t - (M - 1) / 2) * DZ); };
+    const anchor = (i, t) => { const a = -Math.PI / 2 + TAU * i / N; return new THREE.Vector3(Math.cos(a) * R * 1.16, Math.sin(a) * R * 1.16, zOf(t)); };
+
+    // ---- on-tube labels: axis names (newest ring) + per-scan dates (time axis) ----
+    // Sprites live in the 3D scene (depth-sorted, fog-lit) and crossfade IN as the
+    // face-on chips fade OUT, so the orbit view is legible without crowding face-on.
+    function makeLabel(text, opt) {
+      opt = opt || {};
+      const font = opt.font || 23, weight = opt.weight || 700, padX = 9, padY = 5, dpr = 2;
+      const cv = document.createElement("canvas"), ctx = cv.getContext("2d");
+      const fontStr = `${weight} ${font}px Inter, system-ui, sans-serif`;
+      ctx.font = fontStr;
+      const w = Math.ceil(ctx.measureText(text).width) + padX * 2, h = font + padY * 2, r = h / 2;
+      cv.width = w * dpr; cv.height = h * dpr; ctx.scale(dpr, dpr);
+      ctx.beginPath();
+      ctx.moveTo(r, 0); ctx.arcTo(w, 0, w, h, r); ctx.arcTo(w, h, 0, h, r); ctx.arcTo(0, h, 0, 0, r); ctx.arcTo(0, 0, w, 0, r); ctx.closePath();
+      ctx.fillStyle = opt.bg || "rgba(255,255,255,0.92)"; ctx.fill();
+      ctx.lineWidth = 1; ctx.strokeStyle = opt.border || "rgba(23,33,27,0.12)"; ctx.stroke();
+      ctx.fillStyle = opt.color || "#27332b"; ctx.font = fontStr; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(text, w / 2, h / 2 + 0.5);
+      const tex = new THREE.CanvasTexture(cv); tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false, opacity: 0 }));
+      const unit = opt.world || 0.0042; sp.scale.set(w * unit, h * unit, 1);
+      sp.renderOrder = 10; sp.userData.base = opt.base == null ? 1 : opt.base;
+      return sp;
+    }
+    const labels = new THREE.Group(); scene.add(labels);
+    const dateLabels = [];
+    for (let i = 0; i < N; i++) {
+      const a = -Math.PI / 2 + TAU * i / N;
+      const sp = makeLabel(axes[i].label, { font: 22, world: 0.0040 });
+      sp.position.set(Math.cos(a) * R * 1.34, Math.sin(a) * R * 1.34, zOf(M - 1));
+      labels.add(sp);
+    }
+    for (let t = 0; t < M; t++) {
+      const sp = makeLabel(meas[t].timestamp, { font: 21, world: 0.0040, color: "#46524b", bg: "rgba(247,250,248,0.94)" });
+      sp.position.set(0, -R * 1.32, zOf(t));
+      sp.userData.base = t === selected ? 1 : 0.45;
+      labels.add(sp); dateLabels.push(sp);
+    }
 
     // Eased camera fly between views. We interpolate in spherical space around
     // the orbit target (radius preserved = zoom kept; camera always looks at the
@@ -268,7 +316,10 @@ export function mountRadar3D(root, timeline) {
     btnHead.addEventListener("click", () => flyTo(VIEW.head, true));
     btnOrbit.addEventListener("click", () => { closeTip(); flyTo(VIEW.orbit, false); });
     controls.addEventListener("start", () => { headOn = false; closeTip(); });   // any drag = exploring the 3D tube
-    onSelect = () => rings.forEach(r => { r.material.opacity = r.userData.t === selected ? 1 : 0.7; });
+    onSelect = () => {
+      rings.forEach(r => { r.material.opacity = r.userData.t === selected ? 1 : ringBase(r.userData.t); });
+      dateLabels.forEach((sp, t) => { sp.userData.base = t === selected ? 1 : 0.45; });
+    };
 
     function resize() { const w = Math.max(280, sceneEl.clientWidth), h = Math.max(320, sceneEl.clientHeight); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
     if (window.ResizeObserver) new ResizeObserver(resize).observe(sceneEl);
@@ -305,6 +356,9 @@ export function mountRadar3D(root, timeline) {
         overlay.style.opacity = op.toFixed(3);
       }
       positionChips(op);
+      const lop = 1 - op;                       // labels fade in as the face-on chips fade out
+      labels.visible = lop > 0.02;
+      if (labels.visible) for (const sp of labels.children) sp.material.opacity = sp.userData.base * lop;
       renderer.render(scene, camera);
       requestAnimationFrame(frame);
     }
