@@ -27,13 +27,17 @@
 }
 .vp-canvas { display: block; inset: 0; position: absolute; width: 100%; height: 100%; }
 
-.vp-overlay { inset: 0; position: absolute; }  /* opacity is driven frame-accurately in JS (camera fly) */
+/* click-through container stacked above the canvas; opacity driven in JS (camera fly).
+   pointer-events:none lets empty-area drags reach the canvas (drag-to-orbit);
+   only the chips opt back in, and only while face-on (.vp-int). */
+.vp-overlay { inset: 0; position: absolute; pointer-events: none; z-index: 2; }
 .vp-axis {
   background: rgba(255, 255, 255, .94); border: 1px solid var(--line); cursor: default;
   border-radius: 9px; box-shadow: 0 10px 26px -22px rgba(23, 33, 27, .6);
-  display: grid; gap: 5px; left: 0; min-width: 116px; padding: 6px 8px 7px;
+  display: grid; gap: 5px; left: 0; min-width: 116px; padding: 6px 8px 7px; pointer-events: none;
   position: absolute; top: 0; white-space: nowrap; backdrop-filter: blur(2px);
 }
+.vp-overlay.vp-int .vp-axis { pointer-events: auto; }   /* chips interactive only while face-on */
 .vp-axhead { align-items: center; display: flex; gap: 7px; }
 .vp-axis strong { font-size: 12px; font-weight: 700; margin-right: auto; }
 .vp-score { border-radius: 999px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; font-weight: 900; padding: 2px 7px; }

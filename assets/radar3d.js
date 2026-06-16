@@ -275,7 +275,7 @@ export function mountRadar3D(root, timeline) {
     resize();
 
     function positionChips(op) {
-      overlay.style.pointerEvents = (op > 0.5 && !fly) ? "auto" : "none";
+      overlay.classList.toggle("vp-int", op > 0.5 && !fly);   // chips interactive only while face-on
       if (op <= 0.001) return;    // fully orbited: skip projection, overlay is invisible anyway
       const w = sceneEl.clientWidth, h = sceneEl.clientHeight;
       for (let i = 0; i < N; i++) {
@@ -318,6 +318,7 @@ export function mountRadar3D(root, timeline) {
     hintEl.textContent = "face-on detail (3D orbit needs WebGL — unavailable here)";
     btnOrbit.disabled = true;
     overlay.style.opacity = "1";
+    overlay.classList.add("vp-int");   // canvas mode is always face-on detail → chips interactive
     const canvas = document.createElement("canvas"); canvas.className = "vp-canvas"; sceneEl.appendChild(canvas);
     const ctx = canvas.getContext("2d");
     let W = 0, H = 0, DPR = 1, cx = 0, cy = 0, Rpx = 0;
