@@ -115,7 +115,7 @@ export function mountRadar3D(root, timeline) {
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.set(0, 0, 8.6);
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; controls.dampingFactor = 0.08; controls.enablePan = false;
+    controls.enableDamping = false; controls.enablePan = false;
     controls.minDistance = 4.5; controls.maxDistance = 16; controls.target.set(0, 0, 0);
     scene.add(new THREE.AmbientLight(0xffffff, 0.78));
     const k = new THREE.DirectionalLight(0xffffff, 0.55); k.position.set(4, 6, 8); scene.add(k);
