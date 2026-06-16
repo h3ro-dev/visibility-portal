@@ -154,8 +154,10 @@ export function mountRadar3D(root, timeline) {
       camera.position.set(controls.target.x + r * si * Math.sin(theta), controls.target.y + r * Math.cos(phi), controls.target.z + r * si * Math.cos(theta));
       camera.lookAt(controls.target); controls.update();
     }
-    btnHead.addEventListener("click", () => snapTo(0, Math.PI / 2));   // head-on
-    btnOrbit.addEventListener("click", () => snapTo(0.95, 1.2));       // 3/4 orbit
+    let headOn = true;
+    btnHead.addEventListener("click", () => { headOn = true; snapTo(0, Math.PI / 2); });
+    btnOrbit.addEventListener("click", () => { headOn = false; snapTo(0.95, 1.2); });
+    controls.addEventListener("start", () => { headOn = false; });     // any drag = exploring the 3D tube
     onSelect = () => rings.forEach(r => { r.material.opacity = r.userData.t === selected ? 1 : 0.7; });
 
     function resize() { const w = Math.max(280, sceneEl.clientWidth), h = Math.max(320, sceneEl.clientHeight); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
@@ -164,11 +166,9 @@ export function mountRadar3D(root, timeline) {
 
     (function frame() {
       controls.update();
-      const off = camera.position.clone().sub(controls.target).normalize();
-      const dev = Math.acos(Math.min(1, Math.abs(off.z)));   // 0 = looking down the time axis (head-on)
-      const op = clamp(1 - dev / 0.6, 0, 1);
-      overlay.style.opacity = op.toFixed(3); overlay.style.pointerEvents = op > 0.5 ? "auto" : "none";
-      if (op > 0.001) {
+      overlay.style.opacity = headOn ? "1" : "0";
+      overlay.style.pointerEvents = headOn ? "auto" : "none";
+      if (headOn) {
         const w = sceneEl.clientWidth, h = sceneEl.clientHeight;
         for (let i = 0; i < N; i++) { const p2 = anchor(i, selected).project(camera); chips3d[i].style.transform = `translate(-50%,-50%) translate(${((p2.x * 0.5 + 0.5) * w).toFixed(1)}px,${((-p2.y * 0.5 + 0.5) * h).toFixed(1)}px)`; chips3d[i].style.display = p2.z < 1 ? "" : "none"; }
       }

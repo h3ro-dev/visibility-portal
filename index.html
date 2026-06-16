@@ -29,7 +29,7 @@
     <div class="panel"><div id="radar"></div></div>
   </div>
   <script type="module">
-    import { mountRadar3D } from "./assets/radar3d.js?v=7";
+    import { mountRadar3D } from "./assets/radar3d.js?v=8";
     const root = document.getElementById("radar");
     fetch("data/timeline.sample.json").then(r => r.json())
       .then(t => mountRadar3D(root, t))
