@@ -60,16 +60,106 @@ export function mountRadar3D(root, timeline) {
 
   function avgScore(t) { let s = 0; for (let i = 0; i < N; i++) s += clamp(num(meas[t].scores[axes[i].key]), 0, 100); return Math.round(s / (N || 1)); }
 
-  // ---- head-on detail overlay chips (shared across engines) ----
+  // ---- head-on detail overlay: per-axis chips + eye-tooltip (shared across engines) ----
+  // Parity with the CFP scorecard: each axis chip carries a banded progress bar,
+  // and an "eye" opens a brief (band + delta + a trajectory sparkline + the
+  // changes targeting that axis = the gaps/proof line). All derived from the
+  // timeline data — no extra contract fields needed.
   const chips3d = [];
-  for (let i = 0; i < N; i++) { const c = document.createElement("div"); c.className = "vp-axis"; overlay.appendChild(c); chips3d.push(c); }
+  for (let i = 0; i < N; i++) {
+    const c = document.createElement("div");
+    c.className = "vp-axis"; c.dataset.i = i;
+    overlay.appendChild(c); chips3d.push(c);
+  }
+  const tip = document.createElement("div");
+  tip.className = "vp-tip"; tip.hidden = true; overlay.appendChild(tip);
+  let tipAxis = -1, tipPinned = false;
+
+  function bandLabel(s) { return s >= BAND.good ? "Strong" : s >= BAND.watch ? "Watch" : "Risk"; }
+  function bandKey(s) { return s >= BAND.good ? "good" : s >= BAND.watch ? "watch" : "risk"; }
+
   function paintOverlayChips() {
     const t = selected;
     for (let i = 0; i < N; i++) {
-      const s = clamp(num(meas[t].scores[axes[i].key]), 0, 100);
-      chips3d[i].innerHTML = `<strong>${esc(axes[i].label)}</strong><span class="vp-score" style="color:${bandCss(s)};background:${bandCss(s)}1f">${s}</span>`;
+      const s = clamp(num(meas[t].scores[axes[i].key]), 0, 100), col = bandCss(s);
+      chips3d[i].innerHTML =
+        `<div class="vp-axhead"><strong>${esc(axes[i].label)}</strong>` +
+        `<span class="vp-score" style="color:${col};background:${col}1f">${s}</span>` +
+        `<button class="vp-eye" type="button" data-i="${i}" aria-label="${esc(axes[i].label)} detail" aria-expanded="false">` +
+        `<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>` +
+        `</button></div>` +
+        `<div class="vp-axisbar"><span style="width:${s}%;background:${col}"></span></div>`;
     }
+    if (tipAxis >= 0) renderTip(tipAxis);   // keep an open brief in sync with the selected scan
   }
+
+  // A 0–100 trajectory sparkline of one axis across every scan (the time-series
+  // read of the CFP axis-drilldown's "submetric position"); selected scan marked.
+  function axisSpark(i) {
+    const key = axes[i].key, w = 132, h = 30, pad = 3;
+    const pts = meas.map((m, t) => {
+      const v = clamp(num(m.scores[key]), 0, 100);
+      const x = pad + (w - 2 * pad) * (M <= 1 ? 0.5 : t / (M - 1));
+      const y = (h - pad) - (h - 2 * pad) * (v / 100);
+      return [x, y];
+    });
+    const d = pts.map((p, t) => (t ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+    const sel = pts[selected] || pts[pts.length - 1];
+    const col = bandCss(clamp(num(meas[selected].scores[key]), 0, 100));
+    return `<svg class="vp-spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">` +
+      `<path d="${d}" fill="none" stroke="#b3c2ba" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>` +
+      `<circle cx="${sel[0].toFixed(1)}" cy="${sel[1].toFixed(1)}" r="3.1" fill="${col}"/></svg>`;
+  }
+
+  function renderTip(i) {
+    const key = axes[i].key, m = meas[selected], prev = selected > 0 ? meas[selected - 1] : null;
+    const s = clamp(num(m.scores[key]), 0, 100);
+    const d = prev ? s - clamp(num(prev.scores[key]), 0, 100) : 0;
+    const rel = (m.changes || []).filter(c => (c.targets || []).includes(key));
+    let h = `<div class="vp-tip-head"><strong>${esc(axes[i].label)}</strong>` +
+      `<span class="vp-pill ${bandKey(s)}">${bandLabel(s)}</span>` +
+      `<span class="vp-tip-score" style="color:${bandCss(s)}">${s}</span></div>`;
+    h += `<div class="vp-tip-sub">` + (prev
+      ? `<b class="${d > 0 ? "up" : d < 0 ? "down" : ""}">${d > 0 ? "+" + d : d}</b> vs ${esc(prev.timestamp)}`
+      : `Baseline scan`) + `</div>`;
+    h += `<div class="vp-tip-spark">${axisSpark(i)}<span>trajectory · ${M} scans</span></div>`;
+    h += `<div class="vp-tip-sec">What's driving it</div>`;
+    h += rel.length
+      ? `<ul class="vp-tip-proof">${rel.map(c => {
+          const ok = c.status === "confirmed";
+          return `<li class="${ok ? "ok" : "sug"}"><span class="vp-st ${ok ? "ok" : "sug"}">${ok ? "confirmed" : "suggested"}</span>` +
+            `<div>${esc(c.what || "")}</div>${c.source ? `<div class="vp-src">${esc(c.source)}</div>` : ""}</li>`;
+        }).join("")}</ul>`
+      : `<div class="vp-tip-gap">No recorded driver this period — open lane.</div>`;
+    tip.innerHTML = h;
+    positionTip(i);
+  }
+
+  function positionTip(i) {
+    tip.hidden = false;                          // must be laid out to measure
+    const cr = chips3d[i].getBoundingClientRect(), or = overlay.getBoundingClientRect();
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    const cxRel = cr.left + cr.width / 2 - or.left, cyRel = cr.top + cr.height / 2 - or.top;
+    let left = cxRel < or.width / 2 ? cxRel + cr.width / 2 + 10 : cxRel - cr.width / 2 - 10 - tw;
+    let top = cyRel - th / 2;
+    left = clamp(left, 6, Math.max(6, or.width - tw - 6));
+    top = clamp(top, 6, Math.max(6, or.height - th - 6));
+    tip.style.transform = `translate(${left.toFixed(1)}px,${top.toFixed(1)}px)`;
+  }
+
+  function showTip(i) { tipAxis = i; renderTip(i); }
+  function hideTip() { if (tipPinned) return; tipAxis = -1; tip.hidden = true; }
+  function closeTip() { tipPinned = false; tipAxis = -1; tip.hidden = true; }   // force (used when orbiting)
+
+  overlay.addEventListener("pointerover", e => { const c = e.target.closest(".vp-axis"); if (c) showTip(+c.dataset.i); });
+  overlay.addEventListener("pointerout", e => { const c = e.target.closest(".vp-axis"); if (c && !c.contains(e.relatedTarget)) hideTip(); });
+  overlay.addEventListener("focusin", e => { const b = e.target.closest(".vp-eye"); if (b) { tipPinned = false; showTip(+b.dataset.i); } });
+  overlay.addEventListener("focusout", e => { if (e.target.closest(".vp-eye")) hideTip(); });
+  overlay.addEventListener("click", e => {
+    const b = e.target.closest(".vp-eye");
+    if (b) { const i = +b.dataset.i; if (tipPinned && tipAxis === i) closeTip(); else { tipPinned = true; showTip(i); } }
+    else if (tipPinned) closeTip();
+  });
 
   // ---- side causal panel + timestamp chips (shared) ----
   function deltaChip(d) { return d ? ` <span class="vp-d ${d > 0 ? "up" : "down"}">${d > 0 ? "+" : ""}${d}</span>` : ""; }
@@ -176,8 +266,8 @@ export function mountRadar3D(root, timeline) {
       };
     }
     btnHead.addEventListener("click", () => flyTo(VIEW.head, true));
-    btnOrbit.addEventListener("click", () => flyTo(VIEW.orbit, false));
-    controls.addEventListener("start", () => { headOn = false; });     // any drag = exploring the 3D tube
+    btnOrbit.addEventListener("click", () => { closeTip(); flyTo(VIEW.orbit, false); });
+    controls.addEventListener("start", () => { headOn = false; closeTip(); });   // any drag = exploring the 3D tube
     onSelect = () => rings.forEach(r => { r.material.opacity = r.userData.t === selected ? 1 : 0.7; });
 
     function resize() { const w = Math.max(280, sceneEl.clientWidth), h = Math.max(320, sceneEl.clientHeight); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
