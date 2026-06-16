@@ -150,7 +150,7 @@ export function mountRadar3D(root, timeline) {
     // directly fights controls.update() and corrupts the head-on calc).
     let fly = null;
     const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    function flyTo(theta, phi) { fly = { fromT: controls.getAzimuthalAngle(), fromP: controls.getPolarAngle(), toT: theta, toP: phi, t0: performance.now(), dur: 700 }; }
+    function flyTo(theta, phi) { controls.enabled = false; fly = { fromT: controls.getAzimuthalAngle(), fromP: controls.getPolarAngle(), toT: theta, toP: phi, r: camera.position.distanceTo(controls.target), t0: performance.now(), dur: 700 }; }
     btnHead.addEventListener("click", () => flyTo(0, Math.PI / 2));        // head-on
     btnOrbit.addEventListener("click", () => flyTo(0.95, 1.2));           // 3/4 orbit
     controls.addEventListener("start", () => { fly = null; });            // user drag cancels a fly
@@ -161,7 +161,13 @@ export function mountRadar3D(root, timeline) {
     resize();
 
     (function frame() {
-      if (fly) { const p = clamp((performance.now() - fly.t0) / fly.dur, 0, 1), e = easeInOut(p); controls.setAzimuthalAngle(lerp(fly.fromT, fly.toT, e)); controls.setPolarAngle(lerp(fly.fromP, fly.toP, e)); if (p >= 1) fly = null; }
+      if (fly) {
+        const p = clamp((performance.now() - fly.t0) / fly.dur, 0, 1), e = easeInOut(p);
+        const th = lerp(fly.fromT, fly.toT, e), ph = lerp(fly.fromP, fly.toP, e), si = Math.sin(ph);
+        camera.position.set(controls.target.x + fly.r * si * Math.sin(th), controls.target.y + fly.r * Math.cos(ph), controls.target.z + fly.r * si * Math.cos(th));
+        camera.lookAt(controls.target);
+        if (p >= 1) { fly = null; controls.enabled = true; }
+      }
       controls.update();
       const dev = Math.hypot(controls.getAzimuthalAngle(), controls.getPolarAngle() - Math.PI / 2);
       const op = clamp(1 - (dev - 0.12) / 0.5, 0, 1);
