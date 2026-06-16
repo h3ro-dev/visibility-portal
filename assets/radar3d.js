@@ -146,17 +146,37 @@ export function mountRadar3D(root, timeline) {
     }
     const anchor = (i, t) => { const a = -Math.PI / 2 + TAU * i / N; return new THREE.Vector3(Math.cos(a) * R * 1.16, Math.sin(a) * R * 1.16, (t - (M - 1) / 2) * DZ); };
 
-    // Snap to a view via spherical coords, then let OrbitControls own it (a
-    // per-frame fly fights controls.update() and blanks the scene). Drag-orbit
-    // is native; these buttons are shortcuts.
-    function snapTo(theta, phi) {
-      const r = camera.position.distanceTo(controls.target), si = Math.sin(phi);
-      camera.position.set(controls.target.x + r * si * Math.sin(theta), controls.target.y + r * Math.cos(phi), controls.target.z + r * si * Math.cos(theta));
-      camera.lookAt(controls.target); controls.update();
+    // Eased camera fly between views. We interpolate in spherical space around
+    // the orbit target (radius preserved = zoom kept; camera always looks at the
+    // target so it can't blank) and DON'T call controls.update() mid-fly — that
+    // fight is what blanked the scene before. When the fly ends we re-enable the
+    // controls and sync them once to the final pose. Drag-orbit stays native.
+    const VIEW = { head: { theta: 0, phi: Math.PI / 2 }, orbit: { theta: 0.95, phi: 1.2 } };
+    const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const FLY_MS = REDUCED ? 0 : 700;
+    const _tmpV = new THREE.Vector3(), _tmpS = new THREE.Spherical();
+    const easeInOut = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const wrapPi = a => { while (a > Math.PI) a -= TAU; while (a < -Math.PI) a += TAU; return a; };
+    const clampPhi = p => clamp(p, 1e-3, Math.PI - 1e-3);
+
+    let headOn = true;            // logical destination — drives drag-time fade + chip interactivity
+    let fly = null;               // active tween descriptor, or null
+    overlay.style.opacity = "1";  // start face-on with the detail overlay shown
+
+    function flyTo(view, faceOn) {
+      const from = _tmpS.setFromVector3(_tmpV.copy(camera.position).sub(controls.target));
+      headOn = faceOn;
+      controls.enabled = false;   // controls must not fight the tween
+      fly = {
+        radius: from.radius,
+        theta0: from.theta, dTheta: wrapPi(view.theta - from.theta),   // shortest angular path
+        phi0: from.phi, phi1: clampPhi(view.phi),
+        op0: parseFloat(overlay.style.opacity) || 0, op1: faceOn ? 1 : 0,
+        t0: -1,
+      };
     }
-    let headOn = true;
-    btnHead.addEventListener("click", () => { headOn = true; snapTo(0, Math.PI / 2); });
-    btnOrbit.addEventListener("click", () => { headOn = false; snapTo(0.95, 1.2); });
+    btnHead.addEventListener("click", () => flyTo(VIEW.head, true));
+    btnOrbit.addEventListener("click", () => flyTo(VIEW.orbit, false));
     controls.addEventListener("start", () => { headOn = false; });     // any drag = exploring the 3D tube
     onSelect = () => rings.forEach(r => { r.material.opacity = r.userData.t === selected ? 1 : 0.7; });
 
@@ -164,17 +184,41 @@ export function mountRadar3D(root, timeline) {
     if (window.ResizeObserver) new ResizeObserver(resize).observe(sceneEl);
     resize();
 
-    (function frame() {
-      controls.update();
-      overlay.style.opacity = headOn ? "1" : "0";
-      overlay.style.pointerEvents = headOn ? "auto" : "none";
-      if (headOn) {
-        const w = sceneEl.clientWidth, h = sceneEl.clientHeight;
-        for (let i = 0; i < N; i++) { const p2 = anchor(i, selected).project(camera); chips3d[i].style.transform = `translate(-50%,-50%) translate(${((p2.x * 0.5 + 0.5) * w).toFixed(1)}px,${((-p2.y * 0.5 + 0.5) * h).toFixed(1)}px)`; chips3d[i].style.display = p2.z < 1 ? "" : "none"; }
+    function positionChips(op) {
+      overlay.style.pointerEvents = (op > 0.5 && !fly) ? "auto" : "none";
+      if (op <= 0.001) return;    // fully orbited: skip projection, overlay is invisible anyway
+      const w = sceneEl.clientWidth, h = sceneEl.clientHeight;
+      for (let i = 0; i < N; i++) {
+        const p2 = anchor(i, selected).project(camera);
+        chips3d[i].style.transform = `translate(-50%,-50%) translate(${((p2.x * 0.5 + 0.5) * w).toFixed(1)}px,${((-p2.y * 0.5 + 0.5) * h).toFixed(1)}px)`;
+        chips3d[i].style.display = p2.z < 1 ? "" : "none";
       }
+    }
+
+    function frame(now) {
+      let op;
+      if (fly) {
+        if (fly.t0 < 0) fly.t0 = now;
+        let p = FLY_MS > 0 ? (now - fly.t0) / FLY_MS : 1;
+        if (p >= 1) p = 1;
+        const e = easeInOut(p);
+        _tmpS.set(fly.radius, fly.phi0 + (fly.phi1 - fly.phi0) * e, fly.theta0 + fly.dTheta * e);
+        camera.position.copy(controls.target).add(_tmpV.setFromSpherical(_tmpS));
+        camera.lookAt(controls.target);
+        op = fly.op0 + (fly.op1 - fly.op0) * e;
+        overlay.style.opacity = op.toFixed(3);
+        if (p === 1) { fly = null; controls.enabled = true; controls.update(); }   // hand the pose back to controls
+      } else {
+        controls.update();
+        const tgt = headOn ? 1 : 0, cur = parseFloat(overlay.style.opacity) || 0;
+        op = Math.abs(tgt - cur) < 4e-3 ? tgt : cur + (tgt - cur) * 0.18;          // smooth drag-time fade
+        overlay.style.opacity = op.toFixed(3);
+      }
+      positionChips(op);
       renderer.render(scene, camera);
       requestAnimationFrame(frame);
-    })();
+    }
+    requestAnimationFrame(frame);
   }
 
   // =====================================================================
