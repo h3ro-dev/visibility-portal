@@ -30,10 +30,37 @@ function webglAvailable() {
   } catch (_) { return false; }
 }
 
+// Cluster grouping (IA chunking): the 12 axes chunk into 3 groups of 4. Axes are
+// reordered so each cluster is a contiguous arc. Cluster is a SEPARATE channel from
+// health — a named label (primary, not colour-dependent) + a faint desaturated tint.
+// Palette is cool/muted and deliberately clear of the green/amber/red health scale.
+const DEFAULT_CLUSTERS = [
+  { key: "foundation", label: "Foundation", color: "#44598a", axes: ["access", "crawl", "ia", "perf"] },
+  { key: "credibility", label: "Credibility", color: "#7a566f", axes: ["proof", "authority", "trust", "local"] },
+  { key: "demand", label: "Demand & Conversion", color: "#2f7d86", axes: ["demand", "aigeo", "cro", "attribution"] },
+];
+function clusterOrder(rawAxes, clusters) {
+  const byKey = {}; rawAxes.forEach(a => { byKey[a.key] = a; });
+  const out = [], seen = {};
+  clusters.forEach(c => c.axes.forEach(k => { if (byKey[k]) { out.push(Object.assign({}, byKey[k], { cluster: c })); seen[k] = 1; } }));
+  rawAxes.forEach(a => { if (!seen[a.key]) out.push(Object.assign({}, a, { cluster: null })); });   // unknown axes keep order, ungrouped
+  return out;
+}
+function clusterSpans(axes) {   // contiguous index ranges per cluster, for sectors/labels
+  const spans = []; let cur = null;
+  axes.forEach((a, i) => {
+    if (!a.cluster) { cur = null; return; }
+    if (cur && cur.cluster === a.cluster) cur.end = i;
+    else { cur = { cluster: a.cluster, start: i, end: i }; spans.push(cur); }
+  });
+  return spans;
+}
+
 export function mountRadar3D(root, timeline) {
-  const axes = timeline.axes || [];
+  const axes = clusterOrder(timeline.axes || [], timeline.clusters || DEFAULT_CLUSTERS);
   const meas = (timeline.measurements || []).slice();
   const N = axes.length, M = meas.length;
+  const spans = clusterSpans(axes);
   let selected = Math.max(0, M - 1);
   const TAU = Math.PI * 2;
 
@@ -212,7 +239,7 @@ export function mountRadar3D(root, timeline) {
     let h = `<div class="vp-drill-card" role="document">` +
       `<button class="vp-drill-x" type="button" aria-label="Close detail">×</button>` +
       `<div class="vp-drill-head"><div class="vp-drill-id"><div class="vp-drill-ax">${esc(axes[i].label)}</div>` +
-      `<div class="vp-drill-meta">${list.length} submetrics${det.sourceWindow ? " · " + esc(det.sourceWindow) : ""}</div></div>` +
+      `<div class="vp-drill-meta">${axes[i].cluster ? `<span class="vp-drill-cl" style="--cl:${axes[i].cluster.color}">${esc(axes[i].cluster.label)}</span> ` : ""}${list.length} submetrics${det.sourceWindow ? " · " + esc(det.sourceWindow) : ""}</div></div>` +
       `<span class="vp-drill-score" style="color:${bandCss(s)}">${s}<span>/100</span></span>` +
       `<span class="vp-pill ${bandKey(s)}">${bandLabel(s)}</span>` +
       (det.confidence ? `<span class="vp-conf">${esc(det.confidence.replace(/_/g, " "))}</span>` : "") +
@@ -267,16 +294,27 @@ export function mountRadar3D(root, timeline) {
   // job; a confidence dot per axis surfaces how trustworthy each score is. Clicking a
   // row opens that axis's drill-down — same affordance as the eye.
   function confClass(c) { c = String(c || ""); if (/partial/.test(c)) return "mid"; if (/block|unverified|missing|none|unknown/.test(c)) return "low"; if (/verified|fully|complete/.test(c)) return "ok"; return "mid"; }
+  function clusterAvg(sp, t) { let s = 0, n = 0; for (let i = sp.start; i <= sp.end; i++) { s += clamp(num(meas[t].scores[axes[i].key]), 0, 100); n++; } return Math.round(s / (n || 1)); }
   function renderRank() {
     const m = meas[selected], det = m.detail || {};
-    const rows = axes.map((a, i) => ({ i, label: a.label, key: a.key, s: clamp(num(m.scores[a.key]), 0, 100), band: (det[a.key] || {}).band, conf: (det[a.key] || {}).confidence }))
+    // cluster summary strip — the chunked, group-level read (3 averages)
+    const strip = spans.length ? `<div class="vp-cluster-strip">` + spans.map(sp => {
+      const av = clusterAvg(sp, selected);
+      return `<div class="vp-cluster-card" style="--cl:${sp.cluster.color}">` +
+        `<div class="vp-cluster-top"><span class="vp-cluster-name">${esc(sp.cluster.label)}</span><span class="vp-cluster-avg" style="color:${bandCss(av)}">${av}</span></div>` +
+        `<div class="vp-cluster-bar"><span style="width:${av}%"></span></div>` +
+        `<div class="vp-cluster-axes">${esc(axes.slice(sp.start, sp.end + 1).map(a => a.label).join(" · "))}</div>` +
+        `</div>`;
+    }).join("") + `</div>` : "";
+    const rows = axes.map((a, i) => ({ i, label: a.label, key: a.key, cl: a.cluster, s: clamp(num(m.scores[a.key]), 0, 100), band: (det[a.key] || {}).band, conf: (det[a.key] || {}).confidence }))
       .sort((x, y) => y.s - x.s);
-    rankEl.innerHTML =
+    rankEl.innerHTML = strip +
       `<div class="vp-rank-h"><span>Where you stand</span><span class="vp-rank-sub">${esc(m.timestamp)} · ranked by score${(m.detail ? " · dot = confidence" : "")}</span></div>` +
       `<div class="vp-rank-grid">` + rows.map((r, idx) => {
         const weak = r.band ? (r.band === "blocked" || r.band === "constrained") : r.s < BAND.watch;
         return `<button class="vp-rank-row${weak ? " weak" : ""}" data-i="${r.i}" type="button">` +
           `<span class="vp-rank-n">${idx + 1}</span>` +
+          `<span class="vp-rank-cl" style="background:${r.cl ? r.cl.color : "transparent"}" title="${r.cl ? esc(r.cl.label) : ""}"></span>` +
           `<span class="vp-rank-lab">${esc(r.label)}</span>` +
           `<span class="vp-rank-bar"><span style="width:${r.s}%;background:${bandCss(r.s)}"></span></span>` +
           `<span class="vp-rank-sc" style="color:${bandCss(r.s)}">${r.s}</span>` +
@@ -393,6 +431,26 @@ export function mountRadar3D(root, timeline) {
       labels.add(sp); dateLabels.push(sp);
     }
 
+    // ---- cluster layer: faint sector wedges + named pills on the front face ----
+    // Cluster = a separate channel from health. Sectors are very low-opacity so they
+    // never compete with the data; the named pill is the primary (colour-independent)
+    // cue. The whole layer is a face-on concept, so it fades OUT as you orbit.
+    const clusterLayer = new THREE.Group(); scene.add(clusterLayer);
+    spans.forEach(sp => {
+      const a0 = -Math.PI / 2 + TAU * (sp.start - 0.5) / N, a1 = -Math.PI / 2 + TAU * (sp.end + 0.5) / N;
+      const seg = 12, pos = [], z = zOf(M - 1) - 0.02, rr = R * 1.05;
+      for (let s = 0; s < seg; s++) {
+        const t0 = a0 + (a1 - a0) * s / seg, t1 = a0 + (a1 - a0) * (s + 1) / seg;
+        pos.push(0, 0, z, Math.cos(t0) * rr, Math.sin(t0) * rr, z, Math.cos(t1) * rr, Math.sin(t1) * rr, z);
+      }
+      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+      const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: new THREE.Color(sp.cluster.color), transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+      mesh.renderOrder = -1; mesh.userData.base = 0.07; clusterLayer.add(mesh);
+      const mid = (a0 + a1) / 2, lr = R * 1.5;
+      const pill = makeLabel(sp.cluster.label, { font: 19, world: 0.0040, color: "#fff", bg: sp.cluster.color, border: "rgba(0,0,0,0)" });
+      pill.position.set(Math.cos(mid) * lr, Math.sin(mid) * lr, zOf(M - 1)); pill.userData.base = 1; clusterLayer.add(pill);
+    });
+
     // Eased camera fly between views. We interpolate in spherical space around
     // the orbit target (radius preserved = zoom kept; camera always looks at the
     // target so it can't blank) and DON'T call controls.update() mid-fly — that
@@ -468,6 +526,8 @@ export function mountRadar3D(root, timeline) {
       const lop = 1 - op;                       // labels fade in as the face-on chips fade out
       labels.visible = lop > 0.02;
       if (labels.visible) for (const sp of labels.children) sp.material.opacity = sp.userData.base * lop;
+      clusterLayer.visible = op > 0.02;         // cluster sectors/pills are a face-on concept → fade with the overlay
+      if (clusterLayer.visible) for (const o of clusterLayer.children) o.material.opacity = (o.userData.base || 1) * op;
       renderer.render(scene, camera);
       requestAnimationFrame(frame);
     }
@@ -498,8 +558,19 @@ export function mountRadar3D(root, timeline) {
     function draw() {
       size(); ctx.clearRect(0, 0, W, H);
       const t = selected;
+      spans.forEach(sp => {   // faint cluster sectors behind the grid (separate channel from health)
+        const a0 = -Math.PI / 2 + TAU * (sp.start - 0.5) / N, a1 = -Math.PI / 2 + TAU * (sp.end + 0.5) / N;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, Rpx * 1.04, a0, a1); ctx.closePath();
+        ctx.fillStyle = sp.cluster.color; ctx.globalAlpha = 0.07; ctx.fill(); ctx.globalAlpha = 1;
+      });
       [20, 40, 60, 80, 100].forEach(lv => { ctx.beginPath(); for (let i = 0; i <= N; i++) { const a = -Math.PI / 2 + TAU * (i % N) / N, rr = Rpx * lv / 100, x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.closePath(); ctx.strokeStyle = lv === 100 ? "#b8c7bc" : "#e2e8e2"; ctx.stroke(); });
       for (let i = 0; i < N; i++) { const a = -Math.PI / 2 + TAU * i / N; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * Rpx, cy + Math.sin(a) * Rpx); ctx.strokeStyle = "#e2e8e2"; ctx.stroke(); }
+      ctx.font = "800 12px Inter, system-ui, sans-serif"; ctx.textBaseline = "middle";   // cluster name labels at each arc midpoint
+      spans.forEach(sp => {
+        const mid = -Math.PI / 2 + TAU * (sp.start + sp.end) / 2 / N, lx = cx + Math.cos(mid) * Rpx * 1.36, ly = cy + Math.sin(mid) * Rpx * 1.36;
+        ctx.fillStyle = sp.cluster.color; ctx.textAlign = Math.cos(mid) > 0.2 ? "left" : Math.cos(mid) < -0.2 ? "right" : "center";
+        ctx.fillText(sp.cluster.label, lx, ly);
+      });
       ctx.beginPath(); for (let i = 0; i < N; i++) { const a = -Math.PI / 2 + TAU * i / N, s = clamp(num(meas[t].scores[axes[i].key]), 0, 100), rr = Rpx * s / 100, x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.closePath();
       ctx.fillStyle = "rgba(39,95,85,0.16)"; ctx.fill(); ctx.strokeStyle = "#275f55"; ctx.lineWidth = 2; ctx.stroke();
       for (let i = 0; i < N; i++) { const a = -Math.PI / 2 + TAU * i / N, s = clamp(num(meas[t].scores[axes[i].key]), 0, 100), rr = Rpx * s / 100, x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr; ctx.beginPath(); ctx.arc(x, y, 4, 0, TAU); ctx.fillStyle = bandCss(s); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); }

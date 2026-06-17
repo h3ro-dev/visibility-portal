@@ -166,6 +166,20 @@
 /* ---- weak-axis pop on the face-on chips (Von Restorff) ---- */
 .vp-axis.weak { border-color: #e6c3c3; box-shadow: 0 0 0 1px #f0d2d2, 0 10px 26px -22px rgba(155, 36, 36, .55); }
 
+/* ---- cluster summary strip: the chunked, group-level read ---- */
+.vp-cluster-strip { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+.vp-cluster-card { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--cl); border-radius: 10px; padding: 9px 12px; }
+.vp-cluster-top { align-items: baseline; display: flex; gap: 8px; justify-content: space-between; }
+.vp-cluster-name { color: var(--cl); font-size: 12px; font-weight: 800; letter-spacing: .01em; }
+.vp-cluster-avg { font-family: ui-monospace, Menlo, monospace; font-size: 17px; font-weight: 900; }
+.vp-cluster-bar { background: #e6ede8; border-radius: 999px; height: 5px; margin: 6px 0 5px; overflow: hidden; }
+.vp-cluster-bar span { background: var(--cl); border-radius: 999px; display: block; height: 100%; transition: width 240ms var(--ease-out); }
+.vp-cluster-axes { color: var(--muted); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 680px) { .vp-cluster-strip { grid-template-columns: 1fr; } }
+
+/* ---- drill header cluster tag ---- */
+.vp-drill-cl { background: color-mix(in srgb, var(--cl) 14%, #fff); border-radius: 999px; color: var(--cl); font-size: 10px; font-weight: 800; padding: 2px 7px; }
+
 /* ---- ranked bar-rail: radar = gestalt, bars = precise ranking ---- */
 .vp-rank { margin-top: 16px; }
 .vp-rank-h { align-items: baseline; display: flex; gap: 10px; margin-bottom: 9px; }
@@ -173,8 +187,9 @@
 .vp-rank-sub { color: var(--muted); font-size: 11px; }
 .vp-rank-grid { display: grid; gap: 6px 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .vp-rank-row { align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 9px; cursor: pointer;
-  display: grid; gap: 9px; grid-template-columns: 18px minmax(72px, 0.9fr) minmax(0, 1.3fr) auto 10px; padding: 6px 10px; text-align: left;
+  display: grid; gap: 9px; grid-template-columns: 16px 8px minmax(64px, 0.9fr) minmax(0, 1.3fr) auto 10px; padding: 6px 10px; text-align: left;
   transition: background-color 140ms ease, border-color 140ms ease, transform 120ms var(--ease-out); width: 100%; }
+.vp-rank-cl { border-radius: 3px; height: 14px; width: 8px; }
 .vp-rank-row:active { transform: scale(0.99); }
 @media (hover: hover) { .vp-rank-row:hover { background: #f6fbf8; border-color: #b8c7bc; } }
 .vp-rank-row.weak { border-left: 4px solid #d8a657; }
