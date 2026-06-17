@@ -1,0 +1,1979 @@
+{
+  "title": "Commercial Funding Partners — visibility over time",
+  "client": {
+    "slug": "cfp",
+    "name": "Commercial Funding Partners"
+  },
+  "axes": [
+    {
+      "key": "access",
+      "label": "Access"
+    },
+    {
+      "key": "crawl",
+      "label": "Crawl / Index"
+    },
+    {
+      "key": "ia",
+      "label": "IA / Links"
+    },
+    {
+      "key": "demand",
+      "label": "Demand"
+    },
+    {
+      "key": "proof",
+      "label": "Proof / EEAT"
+    },
+    {
+      "key": "authority",
+      "label": "Authority"
+    },
+    {
+      "key": "local",
+      "label": "Local"
+    },
+    {
+      "key": "aigeo",
+      "label": "AI / GEO"
+    },
+    {
+      "key": "perf",
+      "label": "Perf / UX"
+    },
+    {
+      "key": "trust",
+      "label": "Trust"
+    },
+    {
+      "key": "cro",
+      "label": "CRO"
+    },
+    {
+      "key": "attribution",
+      "label": "Attribution"
+    }
+  ],
+  "submetrics": {
+    "access": [
+      {
+        "key": "provider_account_inventory",
+        "label": "Provider Account Inventory",
+        "score": 72,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "provider registry",
+          "account setup ledger",
+          "browser/API readbacks"
+        ],
+        "sourceExamples": [
+          "account exists",
+          "owner",
+          "plan",
+          "current readback"
+        ],
+        "improvementActions": "Use restored New Reward broker readback to normalize CFP aliases and provider rows; keep duplicate setup blocked until canonical row decision.",
+        "proofRequired": "Provider-readiness output with broker row disposition, provider rows attached to the canonical tenant, and no duplicate accounts/tags created."
+      },
+      {
+        "key": "client_property_access",
+        "label": "Client Property Access",
+        "score": 70,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC",
+          "GA4",
+          "GTM",
+          "GBP",
+          "Bing",
+          "Ahrefs",
+          "Clarity",
+          "CMS"
+        ],
+        "sourceExamples": [
+          "property access",
+          "role",
+          "location/project/container id"
+        ],
+        "improvementActions": "Use restored New Reward broker readback to normalize CFP aliases and provider rows; keep duplicate setup blocked until canonical row decision.",
+        "proofRequired": "Provider-readiness output with broker row disposition, provider rows attached to the canonical tenant, and no duplicate accounts/tags created."
+      },
+      {
+        "key": "secret_storage_readiness",
+        "label": "Secret Storage Readiness",
+        "score": 70,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Keychain",
+          "credential map",
+          "env loader"
+        ],
+        "sourceExamples": [
+          "secret item exists",
+          "loader returns required env names"
+        ],
+        "improvementActions": "Use restored New Reward broker readback to normalize CFP aliases and provider rows; keep duplicate setup blocked until canonical row decision.",
+        "proofRequired": "Provider-readiness output with broker row disposition, provider rows attached to the canonical tenant, and no duplicate accounts/tags created."
+      },
+      {
+        "key": "local_tool_runtime",
+        "label": "Local Tool Runtime",
+        "score": 67,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "SEO toolbelt",
+          "Node",
+          "Python",
+          "Docker",
+          "browser runtimes",
+          "SiteOne",
+          "Wappalyzergo",
+          "BigQuery CLI/API"
+        ],
+        "sourceExamples": [
+          "tool version",
+          "runtime health",
+          "pinned versions",
+          "crawl/fingerprint/query runner availability"
+        ],
+        "improvementActions": "Use restored New Reward broker readback to normalize CFP aliases and provider rows; keep duplicate setup blocked until canonical row decision.",
+        "proofRequired": "Provider-readiness output with broker row disposition, provider rows attached to the canonical tenant, and no duplicate accounts/tags created."
+      },
+      {
+        "key": "evidence_packet_and_ledgers",
+        "label": "Evidence Packet And Ledgers",
+        "score": 77,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "provider-toolbelt ledger",
+          "system map",
+          "evidence folders"
+        ],
+        "sourceExamples": [
+          "packet exists",
+          "lanes classified",
+          "source map copied"
+        ],
+        "improvementActions": "Use restored New Reward broker readback to normalize CFP aliases and provider rows; keep duplicate setup blocked until canonical row decision.",
+        "proofRequired": "Provider-readiness output with broker row disposition, provider rows attached to the canonical tenant, and no duplicate accounts/tags created."
+      },
+      {
+        "key": "mutation_and_approval_boundaries",
+        "label": "Mutation And Approval Boundaries",
+        "score": 74,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "provider ledger",
+          "issue tracker",
+          "CMS/DNS/GTM/profile state"
+        ],
+        "sourceExamples": [
+          "approval gates",
+          "owner",
+          "write boundary"
+        ],
+        "improvementActions": "Use restored New Reward broker readback to normalize CFP aliases and provider rows; keep duplicate setup blocked until canonical row decision.",
+        "proofRequired": "Provider-readiness output with broker row disposition, provider rows attached to the canonical tenant, and no duplicate accounts/tags created."
+      }
+    ],
+    "crawl": [
+      {
+        "key": "canonical_host_and_redirects",
+        "label": "Canonical Host And Redirects",
+        "score": 86,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "curl",
+          "Playwright",
+          "crawl",
+          "SiteOne",
+          "CDN",
+          "Wayback CDX"
+        ],
+        "sourceExamples": [
+          "final URL",
+          "redirect chain",
+          "canonical host",
+          "historical host/URL variants"
+        ],
+        "improvementActions": "A6 redirect repair implemented for /equipment-financing/ plus equipment-to-equipment-financing shortcut and typo variants; next step is full sitemap corpus and GSC/IndexNow follow-up.",
+        "proofRequired": "Post-repair route matrix plus priority public verifiers show shortcut and typo variants redirect to the canonical service URL with 200 final status."
+      },
+      {
+        "key": "robots_meta_xrobots",
+        "label": "Robots Meta Xrobots",
+        "score": 80,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "robots.txt",
+          "rendered HTML",
+          "headers"
+        ],
+        "sourceExamples": [
+          "robots allow/deny",
+          "meta robots",
+          "X-Robots-Tag"
+        ],
+        "improvementActions": "A6 redirect repair implemented for /equipment-financing/ plus equipment-to-equipment-financing shortcut and typo variants; next step is full sitemap corpus and GSC/IndexNow follow-up.",
+        "proofRequired": "Post-repair route matrix plus priority public verifiers show shortcut and typo variants redirect to the canonical service URL with 200 final status."
+      },
+      {
+        "key": "sitemap_coverage_and_noise",
+        "label": "Sitemap Coverage And Noise",
+        "score": 82,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "sitemap parser",
+          "GSC sitemaps",
+          "crawl",
+          "SiteOne",
+          "Wayback CDX"
+        ],
+        "sourceExamples": [
+          "valid URLs",
+          "stale URLs",
+          "orphan/missing money pages",
+          "historically valuable missing URLs"
+        ],
+        "improvementActions": "A6 redirect repair implemented for /equipment-financing/ plus equipment-to-equipment-financing shortcut and typo variants; next step is full sitemap corpus and GSC/IndexNow follow-up.",
+        "proofRequired": "Post-repair route matrix plus priority public verifiers show shortcut and typo variants redirect to the canonical service URL with 200 final status."
+      },
+      {
+        "key": "url_inspection_indexability",
+        "label": "Url Inspection Indexability",
+        "score": 78,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC URL Inspection",
+          "live URL checks"
+        ],
+        "sourceExamples": [
+          "Google canonical",
+          "indexability",
+          "discovery/crawl state"
+        ],
+        "improvementActions": "A6 redirect repair implemented for /equipment-financing/ plus equipment-to-equipment-financing shortcut and typo variants; next step is full sitemap corpus and GSC/IndexNow follow-up.",
+        "proofRequired": "Post-repair route matrix plus priority public verifiers show shortcut and typo variants redirect to the canonical service URL with 200 final status."
+      },
+      {
+        "key": "status_code_and_broken_route_health",
+        "label": "Status Code And Broken Route Health",
+        "score": 88,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "SiteOne",
+          "link checker",
+          "server logs",
+          "Wayback CDX"
+        ],
+        "sourceExamples": [
+          "404/5xx",
+          "redirects",
+          "soft 404",
+          "broken assets",
+          "lost historical URLs"
+        ],
+        "improvementActions": "A6 redirect repair implemented for /equipment-financing/ plus equipment-to-equipment-financing shortcut and typo variants; next step is full sitemap corpus and GSC/IndexNow follow-up.",
+        "proofRequired": "Post-repair route matrix plus priority public verifiers show shortcut and typo variants redirect to the canonical service URL with 200 final status."
+      },
+      {
+        "key": "rendered_crawl_access",
+        "label": "Rendered Crawl Access",
+        "score": 80,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Playwright",
+          "Crawlee",
+          "SiteOne",
+          "raw HTML comparison"
+        ],
+        "sourceExamples": [
+          "rendered content",
+          "JS dependency",
+          "AI/user parity",
+          "standalone crawl parity"
+        ],
+        "improvementActions": "A6 redirect repair implemented for /equipment-financing/ plus equipment-to-equipment-financing shortcut and typo variants; next step is full sitemap corpus and GSC/IndexNow follow-up.",
+        "proofRequired": "Post-repair route matrix plus priority public verifiers show shortcut and typo variants redirect to the canonical service URL with 200 final status."
+      },
+      {
+        "key": "bing_indexnow_state",
+        "label": "Bing Indexnow State",
+        "score": 80,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Bing WMT",
+          "IndexNow"
+        ],
+        "sourceExamples": [
+          "key route",
+          "submit response",
+          "Bing sitemap state"
+        ],
+        "improvementActions": "A6 redirect repair implemented for /equipment-financing/ plus equipment-to-equipment-financing shortcut and typo variants; next step is full sitemap corpus and GSC/IndexNow follow-up.",
+        "proofRequired": "Post-repair route matrix plus priority public verifiers show shortcut and typo variants redirect to the canonical service URL with 200 final status."
+      }
+    ],
+    "ia": [
+      {
+        "key": "page_hierarchy_and_templates",
+        "label": "Page Hierarchy And Templates",
+        "score": 68,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "sitemap",
+          "CMS inventory"
+        ],
+        "sourceExamples": [
+          "hub/service/category hierarchy",
+          "template mapping"
+        ],
+        "improvementActions": "restructure confusing hierarchy and templates; Use GSC page/query data and the sitemap corpus to prioritize internal links from service hubs to proof assets and contact paths.",
+        "proofRequired": "Rendered crawl export showing priority pages linked from relevant hubs with canonical final URLs and no orphaned key assets."
+      },
+      {
+        "key": "crawl_depth_and_orphans",
+        "label": "Crawl Depth And Orphans",
+        "score": 72,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "GSC pages",
+          "sitemap"
+        ],
+        "sourceExamples": [
+          "depth",
+          "orphan URLs",
+          "linked vs indexed pages"
+        ],
+        "improvementActions": "link orphan money pages; reduce crawl depth; Use GSC page/query data and the sitemap corpus to prioritize internal links from service hubs to proof assets and contact paths.",
+        "proofRequired": "Rendered crawl export showing priority pages linked from relevant hubs with canonical final URLs and no orphaned key assets."
+      },
+      {
+        "key": "hub_and_contextual_internal_links",
+        "label": "Hub And Contextual Internal Links",
+        "score": 75,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "rendered DOM",
+          "crawl link graph",
+          "content inventory"
+        ],
+        "sourceExamples": [
+          "hub links",
+          "contextual anchors",
+          "related pages"
+        ],
+        "improvementActions": "add contextual links and hub navigation; Use GSC page/query data and the sitemap corpus to prioritize internal links from service hubs to proof assets and contact paths.",
+        "proofRequired": "Rendered crawl export showing priority pages linked from relevant hubs with canonical final URLs and no orphaned key assets."
+      },
+      {
+        "key": "breadcrumbs_and_anchor_clarity",
+        "label": "Breadcrumbs And Anchor Clarity",
+        "score": 70,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "rendered DOM",
+          "schema extraction"
+        ],
+        "sourceExamples": [
+          "breadcrumb schema",
+          "anchor text quality"
+        ],
+        "improvementActions": "add breadcrumbs and descriptive anchors; Use GSC page/query data and the sitemap corpus to prioritize internal links from service hubs to proof assets and contact paths.",
+        "proofRequired": "Rendered crawl export showing priority pages linked from relevant hubs with canonical final URLs and no orphaned key assets."
+      },
+      {
+        "key": "duplicate_and_parameter_control",
+        "label": "Duplicate And Parameter Control",
+        "score": 74,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "canonical extraction",
+          "server/CDN rules"
+        ],
+        "sourceExamples": [
+          "duplicates",
+          "parameters",
+          "/home variants",
+          "canonical drift"
+        ],
+        "improvementActions": "consolidate duplicates and parameter noise; Use GSC page/query data and the sitemap corpus to prioritize internal links from service hubs to proof assets and contact paths.",
+        "proofRequired": "Rendered crawl export showing priority pages linked from relevant hubs with canonical final URLs and no orphaned key assets."
+      },
+      {
+        "key": "buyer_path_completeness",
+        "label": "Buyer Path Completeness",
+        "score": 71,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "screenshots",
+          "navigation",
+          "forms",
+          "analytics paths"
+        ],
+        "sourceExamples": [
+          "service/product path",
+          "CTA path",
+          "proof path"
+        ],
+        "improvementActions": "make buyer paths complete and visible; Use GSC page/query data and the sitemap corpus to prioritize internal links from service hubs to proof assets and contact paths.",
+        "proofRequired": "Rendered crawl export showing priority pages linked from relevant hubs with canonical final URLs and no orphaned key assets."
+      }
+    ],
+    "demand": [
+      {
+        "key": "gsc_query_page_opportunity",
+        "label": "Gsc Query Page Opportunity",
+        "score": 70,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC Search Analytics"
+        ],
+        "sourceExamples": [
+          "impressions",
+          "clicks",
+          "CTR",
+          "position",
+          "query/page fit"
+        ],
+        "improvementActions": "prioritize strike-zone pages and queries; Turn GSC high-impression low-CTR queries and rank-tracker wins into title/meta and internal-link edits for priority pages.",
+        "proofRequired": "Before/after query-page table plus retest window showing CTR, impressions, and rank movement."
+      },
+      {
+        "key": "title_meta_ctr_fit",
+        "label": "Title Meta Ctr Fit",
+        "score": 74,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC",
+          "SERP review",
+          "live metadata"
+        ],
+        "sourceExamples": [
+          "CTR gaps",
+          "title/meta mismatch"
+        ],
+        "improvementActions": "rewrite titles/meta for existing demand; Turn GSC high-impression low-CTR queries and rank-tracker wins into title/meta and internal-link edits for priority pages.",
+        "proofRequired": "Before/after query-page table plus retest window showing CTR, impressions, and rank movement."
+      },
+      {
+        "key": "serp_intent_and_competitor_fit",
+        "label": "Serp Intent And Competitor Fit",
+        "score": 77,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "SERP review",
+          "DataForSEO",
+          "Ahrefs"
+        ],
+        "sourceExamples": [
+          "intent",
+          "SERP features",
+          "competitor formats"
+        ],
+        "improvementActions": "adjust page format and content to intent; Turn GSC high-impression low-CTR queries and rank-tracker wins into title/meta and internal-link edits for priority pages.",
+        "proofRequired": "Before/after query-page table plus retest window showing CTR, impressions, and rank movement."
+      },
+      {
+        "key": "keyword_topic_gap_coverage",
+        "label": "Keyword Topic Gap Coverage",
+        "score": 72,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "DataForSEO",
+          "Ahrefs",
+          "Keyword Planner",
+          "Trends"
+        ],
+        "sourceExamples": [
+          "missing topics",
+          "variants",
+          "commercial modifiers"
+        ],
+        "improvementActions": "create demand-backed briefs or sections; Turn GSC high-impression low-CTR queries and rank-tracker wins into title/meta and internal-link edits for priority pages.",
+        "proofRequired": "Before/after query-page table plus retest window showing CTR, impressions, and rank movement."
+      },
+      {
+        "key": "content_decay_and_freshness_opportunity",
+        "label": "Content Decay And Freshness Opportunity",
+        "score": 76,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC history",
+          "CMS dates",
+          "SERP dates"
+        ],
+        "sourceExamples": [
+          "decay",
+          "stale pages",
+          "new competitors"
+        ],
+        "improvementActions": "refresh decayed pages and dates; Turn GSC high-impression low-CTR queries and rank-tracker wins into title/meta and internal-link edits for priority pages.",
+        "proofRequired": "Before/after query-page table plus retest window showing CTR, impressions, and rank movement."
+      },
+      {
+        "key": "local_or_product_modifier_coverage",
+        "label": "Local Or Product Modifier Coverage",
+        "score": 73,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC",
+          "GBP",
+          "SERP",
+          "DataForSEO"
+        ],
+        "sourceExamples": [
+          "locations",
+          "services",
+          "product variants"
+        ],
+        "improvementActions": "map missing modifiers to pages/sections; Turn GSC high-impression low-CTR queries and rank-tracker wins into title/meta and internal-link edits for priority pages.",
+        "proofRequired": "Before/after query-page table plus retest window showing CTR, impressions, and rank movement."
+      }
+    ],
+    "proof": [
+      {
+        "key": "intent_satisfaction_and_depth",
+        "label": "Intent Satisfaction And Depth",
+        "score": 72,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "content audit",
+          "SERP review",
+          "GSC"
+        ],
+        "sourceExamples": [
+          "answer completeness",
+          "buyer objections"
+        ],
+        "improvementActions": "expand or refocus content; Audit older pages/posts for outdated language, missing proof context, weak authorship/date treatment, and mismatched CFP terminology.",
+        "proofRequired": "Content QA table with fixed or intentionally retained pages and a fresh crawl/indexability readback."
+      },
+      {
+        "key": "claim_proof_and_source_quality",
+        "label": "Claim Proof And Source Quality",
+        "score": 76,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "claim register",
+          "proof assets",
+          "schema"
+        ],
+        "sourceExamples": [
+          "claims with evidence",
+          "risky language"
+        ],
+        "improvementActions": "add source-backed proof; remove unsupported claims; Audit older pages/posts for outdated language, missing proof context, weak authorship/date treatment, and mismatched CFP terminology.",
+        "proofRequired": "Content QA table with fixed or intentionally retained pages and a fresh crawl/indexability readback."
+      },
+      {
+        "key": "entity_author_freshness_signals",
+        "label": "Entity Author Freshness Signals",
+        "score": 79,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "CMS",
+          "schema",
+          "visible page"
+        ],
+        "sourceExamples": [
+          "author",
+          "dateModified",
+          "org/person facts"
+        ],
+        "improvementActions": "add truthful author/entity/freshness signals; Audit older pages/posts for outdated language, missing proof context, weak authorship/date treatment, and mismatched CFP terminology.",
+        "proofRequired": "Content QA table with fixed or intentionally retained pages and a fresh crawl/indexability readback."
+      },
+      {
+        "key": "answer_blocks_faqs_comparisons",
+        "label": "Answer Blocks Faqs Comparisons",
+        "score": 74,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "rendered body",
+          "prompt/citation baseline"
+        ],
+        "sourceExamples": [
+          "self-contained answers",
+          "FAQ",
+          "tables"
+        ],
+        "improvementActions": "add quotable answer blocks and comparisons; Audit older pages/posts for outdated language, missing proof context, weak authorship/date treatment, and mismatched CFP terminology.",
+        "proofRequired": "Content QA table with fixed or intentionally retained pages and a fresh crawl/indexability readback."
+      },
+      {
+        "key": "schema_body_consistency",
+        "label": "Schema Body Consistency",
+        "score": 78,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "extruct",
+          "validators",
+          "rendered body"
+        ],
+        "sourceExamples": [
+          "schema matches visible text",
+          "no empty shells"
+        ],
+        "improvementActions": "generate schema from body/source data; Audit older pages/posts for outdated language, missing proof context, weak authorship/date treatment, and mismatched CFP terminology.",
+        "proofRequired": "Content QA table with fixed or intentionally retained pages and a fresh crawl/indexability readback."
+      },
+      {
+        "key": "conversion_copy_and_offer_clarity",
+        "label": "Conversion Copy And Offer Clarity",
+        "score": 75,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "page review",
+          "screenshots",
+          "forms"
+        ],
+        "sourceExamples": [
+          "offer clarity",
+          "CTA clarity",
+          "risk/friction"
+        ],
+        "improvementActions": "clarify offer and next step; Audit older pages/posts for outdated language, missing proof context, weak authorship/date treatment, and mismatched CFP terminology.",
+        "proofRequired": "Content QA table with fixed or intentionally retained pages and a fresh crawl/indexability readback."
+      }
+    ],
+    "authority": [
+      {
+        "key": "referring_domain_quality",
+        "label": "Referring Domain Quality",
+        "score": 54,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Ahrefs",
+          "AWT",
+          "GSC links",
+          "Bing links"
+        ],
+        "sourceExamples": [
+          "quality domains",
+          "relevance",
+          "trends"
+        ],
+        "improvementActions": "pursue relevant citation/link targets; Prepare approval-gated outreach/citation targets from the Ahrefs evidence, excluding spammy or paid-link patterns.",
+        "proofRequired": "Approved target list, sent/earned link ledger, and later Ahrefs/GSC link readback."
+      },
+      {
+        "key": "backlink_anchor_risk",
+        "label": "Backlink Anchor Risk",
+        "score": 58,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Ahrefs",
+          "DataForSEO",
+          "GSC links"
+        ],
+        "sourceExamples": [
+          "anchor distribution",
+          "spam/risk"
+        ],
+        "improvementActions": "flag risky anchors and repair obvious issues; Prepare approval-gated outreach/citation targets from the Ahrefs evidence, excluding spammy or paid-link patterns.",
+        "proofRequired": "Approved target list, sent/earned link ledger, and later Ahrefs/GSC link readback."
+      },
+      {
+        "key": "top_linked_page_support",
+        "label": "Top Linked Page Support",
+        "score": 61,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Ahrefs",
+          "GSC links",
+          "crawl",
+          "Wayback CDX"
+        ],
+        "sourceExamples": [
+          "which pages earn links",
+          "internal support",
+          "lost historical URL targets"
+        ],
+        "improvementActions": "link from authority pages to money pages and recover lost linked pages; Prepare approval-gated outreach/citation targets from the Ahrefs evidence, excluding spammy or paid-link patterns.",
+        "proofRequired": "Approved target list, sent/earned link ledger, and later Ahrefs/GSC link readback."
+      },
+      {
+        "key": "citations_pr_trade_directories",
+        "label": "Citations Pr Trade Directories",
+        "score": 56,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "directories",
+          "PR",
+          "industry sites",
+          "Common Crawl CDXJ",
+          "Wayback CDX"
+        ],
+        "sourceExamples": [
+          "citation presence",
+          "profile quality",
+          "open-web corpus corroboration",
+          "archived citation URLs"
+        ],
+        "improvementActions": "build citation and PR target list; recover missing profiles; Prepare approval-gated outreach/citation targets from the Ahrefs evidence, excluding spammy or paid-link patterns.",
+        "proofRequired": "Approved target list, sent/earned link ledger, and later Ahrefs/GSC link readback."
+      },
+      {
+        "key": "competitor_authority_gap",
+        "label": "Competitor Authority Gap",
+        "score": 60,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Ahrefs",
+          "DataForSEO",
+          "SERP review",
+          "Common Crawl CDXJ",
+          "Wayback CDX"
+        ],
+        "sourceExamples": [
+          "competitor link/citation gaps",
+          "public corpus/source gap",
+          "historical competitor citation footprint"
+        ],
+        "improvementActions": "prioritize achievable competitor gaps; Prepare approval-gated outreach/citation targets from the Ahrefs evidence, excluding spammy or paid-link patterns.",
+        "proofRequired": "Approved target list, sent/earned link ledger, and later Ahrefs/GSC link readback."
+      },
+      {
+        "key": "unlinked_mentions_and_repairs",
+        "label": "Unlinked Mentions And Repairs",
+        "score": 57,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "SERP",
+          "brand search",
+          "Ahrefs",
+          "Common Crawl CDXJ",
+          "Wayback CDX"
+        ],
+        "sourceExamples": [
+          "mentions without links",
+          "broken backlinks",
+          "open-web brand/source mentions",
+          "archived mention targets"
+        ],
+        "improvementActions": "outreach or repair links and recover old mention targets; Prepare approval-gated outreach/citation targets from the Ahrefs evidence, excluding spammy or paid-link patterns.",
+        "proofRequired": "Approved target list, sent/earned link ledger, and later Ahrefs/GSC link readback."
+      }
+    ],
+    "local": [
+      {
+        "key": "nap_consistency",
+        "label": "Nap Consistency",
+        "score": 78,
+        "weight": 20,
+        "confidence": "verified_readback",
+        "evidenceSystems": [
+          "site",
+          "GBP",
+          "Bing Places",
+          "Apple",
+          "citations"
+        ],
+        "sourceExamples": [
+          "name/address/phone consistency"
+        ],
+        "improvementActions": "Keep owned-site and GBP NAP as the canonical reference for citation/Bing repairs.",
+        "proofRequired": "Dated local-profile readback showing canonical website, categories, services, NAP, reviews, duplicate/conflict disposition, and repair state."
+      },
+      {
+        "key": "gbp_profile_quality",
+        "label": "Gbp Profile Quality",
+        "score": 76,
+        "weight": 20,
+        "confidence": "verified_readback",
+        "evidenceSystems": [
+          "GBP"
+        ],
+        "sourceExamples": [
+          "categories",
+          "services",
+          "photos",
+          "reviews",
+          "role"
+        ],
+        "improvementActions": "Monitor public Maps lag and attach screenshot/export proof.",
+        "proofRequired": "Dated local-profile readback showing canonical website, categories, services, NAP, reviews, duplicate/conflict disposition, and repair state."
+      },
+      {
+        "key": "bing_apple_profile_quality",
+        "label": "Bing Apple Profile Quality",
+        "score": 38,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Bing Places",
+          "Apple Business"
+        ],
+        "sourceExamples": [
+          "listing state",
+          "sync",
+          "duplicate",
+          "categories"
+        ],
+        "improvementActions": "Run Bing Places readback/import from Google; keep Apple excluded for now.",
+        "proofRequired": "Dated local-profile readback showing canonical website, categories, services, NAP, reviews, duplicate/conflict disposition, and repair state."
+      },
+      {
+        "key": "reviews_and_reputation",
+        "label": "Reviews And Reputation",
+        "score": 50,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GBP",
+          "public reviews",
+          "CRM review flow"
+        ],
+        "sourceExamples": [
+          "rating",
+          "recency",
+          "responses",
+          "themes"
+        ],
+        "improvementActions": "Create the review/reputation action plan and obtain manager/API review depth.",
+        "proofRequired": "Dated local-profile readback showing canonical website, categories, services, NAP, reviews, duplicate/conflict disposition, and repair state."
+      },
+      {
+        "key": "citation_duplicates_and_conflicts",
+        "label": "Citation Duplicates And Conflicts",
+        "score": 52,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "citation scan",
+          "public SERP"
+        ],
+        "sourceExamples": [
+          "duplicate/conflicting profiles"
+        ],
+        "improvementActions": "Reconcile conflicting citation rows and mark safe public repair routes.",
+        "proofRequired": "Dated local-profile readback showing canonical website, categories, services, NAP, reviews, duplicate/conflict disposition, and repair state."
+      },
+      {
+        "key": "local_pages_and_service_area_fit",
+        "label": "Local Pages And Service Area Fit",
+        "score": 72,
+        "weight": 15,
+        "confidence": "verified_public_readback",
+        "evidenceSystems": [
+          "site pages",
+          "GSC",
+          "GBP services"
+        ],
+        "sourceExamples": [
+          "service area/content fit",
+          "location coverage"
+        ],
+        "improvementActions": "Finish local/referral page fit QA and attach live route proof.",
+        "proofRequired": "Dated local-profile readback showing canonical website, categories, services, NAP, reviews, duplicate/conflict disposition, and repair state."
+      }
+    ],
+    "aigeo": [
+      {
+        "key": "ai_crawler_access_policy",
+        "label": "Ai Crawler Access Policy",
+        "score": 58,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "robots",
+          "headers",
+          "AI bot matrix"
+        ],
+        "sourceExamples": [
+          "GPTBot",
+          "OAI-SearchBot",
+          "ClaudeBot",
+          "PerplexityBot",
+          "Google-Extended"
+        ],
+        "improvementActions": "adjust AI crawler policy with approval; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      },
+      {
+        "key": "ai_artifact_freshness",
+        "label": "Ai Artifact Freshness",
+        "score": 62,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "llms.txt",
+          "agent.json",
+          "catalog.json",
+          "pricing/service markdown"
+        ],
+        "sourceExamples": [
+          "status",
+          "freshness",
+          "canonical consistency"
+        ],
+        "improvementActions": "refresh AI artifacts and publish checks; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      },
+      {
+        "key": "prompt_discovery_quality",
+        "label": "Prompt Discovery Quality",
+        "score": 65,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC",
+          "DataForSEO AI Optimization",
+          "Ahrefs Brand Radar",
+          "CRM",
+          "site search",
+          "SERP review"
+        ],
+        "sourceExamples": [
+          "prompt_origin",
+          "query demand",
+          "fan-out",
+          "topic gap"
+        ],
+        "improvementActions": "generate evidence-derived prompts and reject low-confidence prompts; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      },
+      {
+        "key": "prompt_citation_baseline",
+        "label": "Prompt Citation Baseline",
+        "score": 60,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "promptfoo",
+          "DataForSEO LLM Mentions",
+          "manual engine snapshots"
+        ],
+        "sourceExamples": [
+          "mentions",
+          "citations",
+          "competitors",
+          "answer shape"
+        ],
+        "improvementActions": "run prompt baseline and record citations; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      },
+      {
+        "key": "brand_mention_share_of_voice",
+        "label": "Brand Mention Share Of Voice",
+        "score": 64,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Ahrefs Brand Radar",
+          "DataForSEO LLM Mentions",
+          "AI visibility exports"
+        ],
+        "sourceExamples": [
+          "brand mentions",
+          "competitor share",
+          "AI citations",
+          "cited domains"
+        ],
+        "improvementActions": "improve owned and third-party citation footprint; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      },
+      {
+        "key": "extractable_quotable_passages",
+        "label": "Extractable Quotable Passages",
+        "score": 61,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "rendered body",
+          "Crawl4AI",
+          "page review"
+        ],
+        "sourceExamples": [
+          "definition blocks",
+          "proof passages",
+          "tables"
+        ],
+        "improvementActions": "add quotable passages and tables; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      },
+      {
+        "key": "entity_schema_clarity",
+        "label": "Entity Schema Clarity",
+        "score": 63,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "schema extraction",
+          "Knowledge Graph checks",
+          "site entity facts"
+        ],
+        "sourceExamples": [
+          "entity facts",
+          "sameAs",
+          "org/person/local clarity"
+        ],
+        "improvementActions": "repair schema/entity consistency; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      },
+      {
+        "key": "third_party_ai_citation_graph",
+        "label": "Third Party Ai Citation Graph",
+        "score": 58,
+        "weight": 5,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Ahrefs",
+          "SERP",
+          "Wikipedia/Wikidata",
+          "YouTube",
+          "Reddit",
+          "directories"
+        ],
+        "sourceExamples": [
+          "offsite sources AI may cite"
+        ],
+        "improvementActions": "build third-party citation plan; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      },
+      {
+        "key": "agent_readiness_and_mcp_artifacts",
+        "label": "Agent Readiness And Mcp Artifacts",
+        "score": 62,
+        "weight": 5,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Cloudflare Agent Readiness",
+          "AI Crawl Control",
+          "promptfoo",
+          "agent.json",
+          "MCP/agent cards"
+        ],
+        "sourceExamples": [
+          "agent parseability",
+          "crawler policy",
+          "tool/action clarity"
+        ],
+        "improvementActions": "repair agent-readable artifacts and readiness blockers; Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+        "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates."
+      }
+    ],
+    "perf": [
+      {
+        "key": "field_core_web_vitals",
+        "label": "Field Core Web Vitals",
+        "score": 66,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "CrUX",
+          "CrUX BigQuery",
+          "GSC CWV"
+        ],
+        "sourceExamples": [
+          "LCP",
+          "INP",
+          "CLS p75 field data",
+          "monthly/origin trend"
+        ],
+        "improvementActions": "prioritize field failing templates; Use existing GTmetrix/CrUX proof to prepare CLS/template fixes, then rerun PSI/CrUX/GTmetrix after quota or approved credit use.",
+        "proofRequired": "Fresh PSI/CrUX/GTmetrix readback showing CLS and key template metrics improved or explained."
+      },
+      {
+        "key": "lab_performance_score",
+        "label": "Lab Performance Score",
+        "score": 70,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "PSI",
+          "Lighthouse",
+          "Unlighthouse"
+        ],
+        "sourceExamples": [
+          "lab LCP",
+          "TBT/INP proxy",
+          "CLS",
+          "budgets"
+        ],
+        "improvementActions": "fix obvious lab bottlenecks; Use existing GTmetrix/CrUX proof to prepare CLS/template fixes, then rerun PSI/CrUX/GTmetrix after quota or approved credit use.",
+        "proofRequired": "Fresh PSI/CrUX/GTmetrix readback showing CLS and key template metrics improved or explained."
+      },
+      {
+        "key": "lcp_inp_cls_root_causes",
+        "label": "Lcp Inp Cls Root Causes",
+        "score": 73,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "WebPageTest",
+          "sitespeed",
+          "DevTools traces",
+          "HTTP Archive BigQuery"
+        ],
+        "sourceExamples": [
+          "LCP element",
+          "blocking JS",
+          "layout shifts",
+          "industry/competitor stack benchmark"
+        ],
+        "improvementActions": "fix root causes not just score; Use existing GTmetrix/CrUX proof to prepare CLS/template fixes, then rerun PSI/CrUX/GTmetrix after quota or approved credit use.",
+        "proofRequired": "Fresh PSI/CrUX/GTmetrix readback showing CLS and key template metrics improved or explained."
+      },
+      {
+        "key": "mobile_buyer_path_ux",
+        "label": "Mobile Buyer Path Ux",
+        "score": 68,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Playwright screenshots",
+          "manual review"
+        ],
+        "sourceExamples": [
+          "mobile layout",
+          "tap targets",
+          "above-fold CTA"
+        ],
+        "improvementActions": "repair mobile buyer path; Use existing GTmetrix/CrUX proof to prepare CLS/template fixes, then rerun PSI/CrUX/GTmetrix after quota or approved credit use.",
+        "proofRequired": "Fresh PSI/CrUX/GTmetrix readback showing CLS and key template metrics improved or explained."
+      },
+      {
+        "key": "asset_and_script_optimization",
+        "label": "Asset And Script Optimization",
+        "score": 72,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "WPT",
+          "Lighthouse",
+          "HTTP Archive BigQuery"
+        ],
+        "sourceExamples": [
+          "image size",
+          "fonts",
+          "scripts",
+          "benchmarked asset/script weight"
+        ],
+        "improvementActions": "optimize assets and loading; Use existing GTmetrix/CrUX proof to prepare CLS/template fixes, then rerun PSI/CrUX/GTmetrix after quota or approved credit use.",
+        "proofRequired": "Fresh PSI/CrUX/GTmetrix readback showing CLS and key template metrics improved or explained."
+      },
+      {
+        "key": "third_party_tag_weight",
+        "label": "Third Party Tag Weight",
+        "score": 69,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GTM",
+          "WPT",
+          "Lighthouse",
+          "HTTP Archive BigQuery",
+          "Wappalyzergo/technology fingerprinting"
+        ],
+        "sourceExamples": [
+          "third-party scripts and tag cost",
+          "detected analytics/widgets/plugins",
+          "competitor tag benchmark"
+        ],
+        "improvementActions": "remove/defer unnecessary tags; Use existing GTmetrix/CrUX proof to prepare CLS/template fixes, then rerun PSI/CrUX/GTmetrix after quota or approved credit use.",
+        "proofRequired": "Fresh PSI/CrUX/GTmetrix readback showing CLS and key template metrics improved or explained."
+      }
+    ],
+    "trust": [
+      {
+        "key": "critical_accessibility_violations",
+        "label": "Critical Accessibility Violations",
+        "score": 60,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "axe",
+          "Pa11y",
+          "Lighthouse"
+        ],
+        "sourceExamples": [
+          "critical/serious issues and selectors"
+        ],
+        "improvementActions": "fix labels/contrast/alt/keyboard issues; Run axe/Pa11y, Nu HTML/resource checks, and SecurityHeaders/SSL Labs before creating hardening issues.",
+        "proofRequired": "Dated a11y/security/html reports with pass/fail rows and retest after approved fixes."
+      },
+      {
+        "key": "semantic_html_and_headings",
+        "label": "Semantic Html And Headings",
+        "score": 64,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "rendered DOM",
+          "html-validate"
+        ],
+        "sourceExamples": [
+          "landmarks",
+          "headings",
+          "buttons/links"
+        ],
+        "improvementActions": "repair semantic structure; Run axe/Pa11y, Nu HTML/resource checks, and SecurityHeaders/SSL Labs before creating hardening issues.",
+        "proofRequired": "Dated a11y/security/html reports with pass/fail rows and retest after approved fixes."
+      },
+      {
+        "key": "broken_links_and_resources",
+        "label": "Broken Links And Resources",
+        "score": 67,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "linkinator",
+          "crawl",
+          "server logs"
+        ],
+        "sourceExamples": [
+          "broken links/assets",
+          "redirects"
+        ],
+        "improvementActions": "repair broken resources; Run axe/Pa11y, Nu HTML/resource checks, and SecurityHeaders/SSL Labs before creating hardening issues.",
+        "proofRequired": "Dated a11y/security/html reports with pass/fail rows and retest after approved fixes."
+      },
+      {
+        "key": "html_validation_quality",
+        "label": "Html Validation Quality",
+        "score": 62,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "W3C/Nu",
+          "html-validate",
+          "Wappalyzergo/technology fingerprinting"
+        ],
+        "sourceExamples": [
+          "invalid markup",
+          "duplicate IDs",
+          "malformed tags",
+          "framework/CMS/plugin fingerprint context"
+        ],
+        "improvementActions": "fix template errors; Run axe/Pa11y, Nu HTML/resource checks, and SecurityHeaders/SSL Labs before creating hardening issues.",
+        "proofRequired": "Dated a11y/security/html reports with pass/fail rows and retest after approved fixes."
+      },
+      {
+        "key": "https_tls_security_headers",
+        "label": "Https Tls Security Headers",
+        "score": 66,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "SecurityHeaders",
+          "Observatory",
+          "SSL Labs",
+          "SSLyze"
+        ],
+        "sourceExamples": [
+          "HSTS",
+          "CSP",
+          "TLS",
+          "mixed content"
+        ],
+        "improvementActions": "add headers/fix TLS/mixed content; Run axe/Pa11y, Nu HTML/resource checks, and SecurityHeaders/SSL Labs before creating hardening issues.",
+        "proofRequired": "Dated a11y/security/html reports with pass/fail rows and retest after approved fixes."
+      },
+      {
+        "key": "privacy_trust_surfaces",
+        "label": "Privacy Trust Surfaces",
+        "score": 63,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "site review",
+          "footer",
+          "policy pages",
+          "Wappalyzergo/technology fingerprinting"
+        ],
+        "sourceExamples": [
+          "privacy",
+          "terms",
+          "contact",
+          "legitimacy cues",
+          "analytics/consent/tag stack context"
+        ],
+        "improvementActions": "repair missing trust pages and contact signals; Run axe/Pa11y, Nu HTML/resource checks, and SecurityHeaders/SSL Labs before creating hardening issues.",
+        "proofRequired": "Dated a11y/security/html reports with pass/fail rows and retest after approved fixes."
+      }
+    ],
+    "cro": [
+      {
+        "key": "cta_and_form_path_integrity",
+        "label": "Cta And Form Path Integrity",
+        "score": 44,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Playwright",
+          "manual test",
+          "forms"
+        ],
+        "sourceExamples": [
+          "CTA visibility",
+          "submit path",
+          "errors"
+        ],
+        "improvementActions": "Use #120 to finish current Tag Assistant/GA4 proof; public forms and phone links are mapped, while hidden source fields still need repair/readback.",
+        "proofRequired": "Public route/form/phone/source-field map, Tag Assistant/GTM Preview or GA4 DebugView/export, Gravity source-field proof, and Clarity first-data readback."
+      },
+      {
+        "key": "behavior_tracking_coverage",
+        "label": "Behavior Tracking Coverage",
+        "score": 48,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Clarity",
+          "PostHog",
+          "GA4"
+        ],
+        "sourceExamples": [
+          "project installed",
+          "first data",
+          "masking/consent"
+        ],
+        "improvementActions": "Read back the existing Clarity project and install/verify through existing GTM/CMS only after duplicate-tag, masking, and consent checks.",
+        "proofRequired": "Public route/form/phone/source-field map, Tag Assistant/GTM Preview or GA4 DebugView/export, Gravity source-field proof, and Clarity first-data readback."
+      },
+      {
+        "key": "rage_dead_click_friction",
+        "label": "Rage Dead Click Friction",
+        "score": 51,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Clarity",
+          "PostHog recordings"
+        ],
+        "sourceExamples": [
+          "rage clicks",
+          "dead clicks",
+          "errors"
+        ],
+        "improvementActions": "Collect Clarity first sessions/rage-dead-click evidence after public install is verified; do not infer friction from public tags alone.",
+        "proofRequired": "Public route/form/phone/source-field map, Tag Assistant/GTM Preview or GA4 DebugView/export, Gravity source-field proof, and Clarity first-data readback."
+      },
+      {
+        "key": "scroll_and_content_engagement",
+        "label": "Scroll And Content Engagement",
+        "score": 46,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Clarity",
+          "GA4",
+          "PostHog"
+        ],
+        "sourceExamples": [
+          "scroll depth",
+          "engagement",
+          "exits"
+        ],
+        "improvementActions": "Collect Clarity/GA4 engagement evidence by priority route and tie any CTA repositioning issue back to #120.",
+        "proofRequired": "Public route/form/phone/source-field map, Tag Assistant/GTM Preview or GA4 DebugView/export, Gravity source-field proof, and Clarity first-data readback."
+      },
+      {
+        "key": "device_source_behavior_segments",
+        "label": "Device Source Behavior Segments",
+        "score": 50,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GA4",
+          "Clarity",
+          "PostHog"
+        ],
+        "sourceExamples": [
+          "device/source/campaign behavior differences"
+        ],
+        "improvementActions": "Refresh GA4 device/source event rows and Clarity segment readback after first data exists.",
+        "proofRequired": "Public route/form/phone/source-field map, Tag Assistant/GTM Preview or GA4 DebugView/export, Gravity source-field proof, and Clarity first-data readback."
+      },
+      {
+        "key": "buyer_path_visual_review",
+        "label": "Buyer Path Visual Review",
+        "score": 47,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Playwright screenshots",
+          "manual review"
+        ],
+        "sourceExamples": [
+          "above-fold",
+          "layout",
+          "trust",
+          "CTA clarity"
+        ],
+        "improvementActions": "Run the visual buyer-path review against the mapped form/phone routes and record CTA/friction findings under #120.",
+        "proofRequired": "Public route/form/phone/source-field map, Tag Assistant/GTM Preview or GA4 DebugView/export, Gravity source-field proof, and Clarity first-data readback."
+      }
+    ],
+    "attribution": [
+      {
+        "key": "ga4_gtm_key_event_integrity",
+        "label": "Ga4 Gtm Key Event Integrity",
+        "score": 58,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GA4",
+          "GTM",
+          "Tag Assistant"
+        ],
+        "sourceExamples": [
+          "key events",
+          "tags",
+          "triggers",
+          "firing"
+        ],
+        "improvementActions": "Use existing GA4 submit-intent, Gravity saved-entry, and Clay handoff evidence; keep accepted/funded outcomes explicitly unavailable and unclaimed.",
+        "proofRequired": "Report maintains separated GA4 intent, Gravity saved-entry, Clay handoff, and unavailable accepted/funded outcome labels."
+      },
+      {
+        "key": "form_call_crm_revenue_joins",
+        "label": "Form Call Crm Revenue Joins",
+        "score": 60,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "forms",
+          "calls",
+          "CRM",
+          "HighLevel/HubSpot/Zoho/source fields"
+        ],
+        "sourceExamples": [
+          "lead source",
+          "status",
+          "revenue",
+          "lifecycle"
+        ],
+        "improvementActions": "Use existing GA4 submit-intent, Gravity saved-entry, and Clay handoff evidence; keep accepted/funded outcomes explicitly unavailable and unclaimed.",
+        "proofRequired": "Report maintains separated GA4 intent, Gravity saved-entry, Clay handoff, and unavailable accepted/funded outcome labels."
+      },
+      {
+        "key": "utm_and_source_preservation",
+        "label": "Utm And Source Preservation",
+        "score": 57,
+        "weight": 15,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "forms",
+          "landing pages",
+          "GTM",
+          "CRM"
+        ],
+        "sourceExamples": [
+          "UTM/source hidden fields",
+          "session source"
+        ],
+        "improvementActions": "Use existing GA4 submit-intent, Gravity saved-entry, and Clay handoff evidence; keep accepted/funded outcomes explicitly unavailable and unclaimed.",
+        "proofRequired": "Report maintains separated GA4 intent, Gravity saved-entry, Clay handoff, and unavailable accepted/funded outcome labels."
+      },
+      {
+        "key": "endpoint_monitoring",
+        "label": "Endpoint Monitoring",
+        "score": 53,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Gatus",
+          "Uptime Kuma"
+        ],
+        "sourceExamples": [
+          "robots/sitemap/artifact/form endpoint checks"
+        ],
+        "improvementActions": "Use existing GA4 submit-intent, Gravity saved-entry, and Clay handoff evidence; keep accepted/funded outcomes explicitly unavailable and unclaimed.",
+        "proofRequired": "Report maintains separated GA4 intent, Gravity saved-entry, Clay handoff, and unavailable accepted/funded outcome labels."
+      },
+      {
+        "key": "scheduled_job_checkins",
+        "label": "Scheduled Job Checkins",
+        "score": 56,
+        "weight": 10,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Healthchecks",
+          "cron",
+          "scripts"
+        ],
+        "sourceExamples": [
+          "provider/report/crawl jobs checked in"
+        ],
+        "improvementActions": "Use existing GA4 submit-intent, Gravity saved-entry, and Clay handoff evidence; keep accepted/funded outcomes explicitly unavailable and unclaimed.",
+        "proofRequired": "Report maintains separated GA4 intent, Gravity saved-entry, Clay handoff, and unavailable accepted/funded outcome labels."
+      },
+      {
+        "key": "client_safe_reporting",
+        "label": "Client Safe Reporting",
+        "score": 70,
+        "weight": 20,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Looker",
+          "Evidence",
+          "Observable",
+          "DuckDB",
+          "issue ledger"
+        ],
+        "sourceExamples": [
+          "scorecard",
+          "action register",
+          "evidence dates"
+        ],
+        "improvementActions": "Use existing GA4 submit-intent, Gravity saved-entry, and Clay handoff evidence; keep accepted/funded outcomes explicitly unavailable and unclaimed.",
+        "proofRequired": "Report maintains separated GA4 intent, Gravity saved-entry, Clay handoff, and unavailable accepted/funded outcome labels."
+      }
+    ]
+  },
+  "measurements": [
+    {
+      "timestamp": "2026-05-11",
+      "label": "Baseline scan",
+      "scores": {
+        "access": 55,
+        "crawl": 50,
+        "ia": 48,
+        "demand": 60,
+        "proof": 52,
+        "authority": 40,
+        "local": 58,
+        "aigeo": 35,
+        "perf": 68,
+        "trust": 70,
+        "cro": 45,
+        "attribution": 42
+      },
+      "changes": [],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-05-18",
+      "label": "Week 1",
+      "scores": {
+        "access": 60,
+        "crawl": 54,
+        "ia": 50,
+        "demand": 62,
+        "proof": 55,
+        "authority": 42,
+        "local": 60,
+        "aigeo": 38,
+        "perf": 70,
+        "trust": 72,
+        "cro": 47,
+        "attribution": 45
+      },
+      "changes": [
+        {
+          "what": "Fixed robots/sitemap and submitted in GSC",
+          "targets": [
+            "access",
+            "crawl"
+          ],
+          "source": "action-queue#11",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Granted GA4 + Search Console read access",
+          "targets": [
+            "attribution"
+          ],
+          "source": "action-queue#9",
+          "status": "confirmed",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-05-25",
+      "label": "Week 2",
+      "scores": {
+        "access": 64,
+        "crawl": 60,
+        "ia": 55,
+        "demand": 64,
+        "proof": 58,
+        "authority": 44,
+        "local": 61,
+        "aigeo": 40,
+        "perf": 72,
+        "trust": 73,
+        "cro": 50,
+        "attribution": 48
+      },
+      "changes": [
+        {
+          "what": "Internal-linking pass across 30 money pages",
+          "targets": [
+            "ia",
+            "crawl"
+          ],
+          "source": "second-pass-actions#4",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Added breadcrumb + Organization schema",
+          "targets": [
+            "proof",
+            "trust"
+          ],
+          "source": "action-queue#18",
+          "status": "suggested",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-06-01",
+      "label": "Week 3",
+      "scores": {
+        "access": 67,
+        "crawl": 66,
+        "ia": 60,
+        "demand": 66,
+        "proof": 62,
+        "authority": 48,
+        "local": 62,
+        "aigeo": 45,
+        "perf": 74,
+        "trust": 74,
+        "cro": 53,
+        "attribution": 52
+      },
+      "changes": [
+        {
+          "what": "Shipped 6 EEAT proof / case-study pages",
+          "targets": [
+            "proof",
+            "authority"
+          ],
+          "source": "causal-hypotheses#7",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Author bios + credentials on key pages",
+          "targets": [
+            "proof"
+          ],
+          "source": "action-queue#22",
+          "status": "confirmed",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-06-08",
+      "label": "Week 4",
+      "scores": {
+        "access": 69,
+        "crawl": 69,
+        "ia": 64,
+        "demand": 70,
+        "proof": 66,
+        "authority": 52,
+        "local": 63,
+        "aigeo": 52,
+        "perf": 76,
+        "trust": 75,
+        "cro": 55,
+        "attribution": 55
+      },
+      "changes": [
+        {
+          "what": "Earned 9 referring domains (PR + directories)",
+          "targets": [
+            "authority"
+          ],
+          "source": "causal-hypotheses#12",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Published llms.txt + entity catalog for AI crawlers",
+          "targets": [
+            "aigeo"
+          ],
+          "source": "action-queue#31",
+          "status": "confirmed",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-06-15",
+      "label": "Live CFP run",
+      "real": true,
+      "confidence": "partial_provider_verified",
+      "scores": {
+        "access": 71,
+        "crawl": 82,
+        "ia": 72,
+        "demand": 74,
+        "proof": 76,
+        "authority": 58,
+        "local": 63,
+        "aigeo": 62,
+        "perf": 70,
+        "trust": 64,
+        "cro": 48,
+        "attribution": 60
+      },
+      "detail": {
+        "access": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "canonical_broker_slug_and_provider_row_disposition",
+          "dayOneTactic": "Use commercial-funding-partners-6138 provider attachment evidence as the current readback source while deciding the canonical CFP tenant/slug before any provider writes.",
+          "proofRequired": "Broker reconciliation readback shows one canonical CFP tenant/alias map and provider rows attached without duplicate setup.",
+          "whatProves": "Existing provider evidence and restored New Reward broker readback prove CFP has provider/control-plane rows for the major lanes.",
+          "whatCannotProve": "It does not resolve the duplicate tenant/slug governance decision or every lane-specific fresh provider readback.",
+          "notes": "Broker readback restored; remaining risk is governance and fresh readback coverage, not missing provider setup."
+        },
+        "crawl": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "full_sitemap_corpus_and_gsc_url_inspection_followup",
+          "dayOneTactic": "Monitor GSC/GA4 for service-page entrances and run a full sitemap corpus plus URL Inspection follow-up after the redirect signal window.",
+          "proofRequired": "Full sitemap crawl and GSC URL Inspection sample remain clean after the A6 redirect repair.",
+          "whatProves": "A6 equipment-financing shortcut and typo variants now redirect to the canonical service page; priority public verifiers returned zero failures and zero warnings.",
+          "whatCannotProve": "It does not prove full sitemap corpus health or fresh GSC URL Inspection state after the repair.",
+          "notes": "A6 shortcut 404 is repaired and verified; score remains capped below full because full corpus/provider index checks were not rerun."
+        },
+        "ia": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "priority_service_and_case_study_linking",
+          "dayOneTactic": "Use GSC page/query data and the sitemap corpus to prioritize internal links from service hubs to proof assets and contact paths.",
+          "proofRequired": "Rendered crawl export showing priority pages linked from relevant hubs with canonical final URLs and no orphaned key assets.",
+          "whatProves": "Sitemap and public signals confirm service, case-study, contact, AI artifact, and WordPress sitemap surfaces are reachable.",
+          "whatCannotProve": "It does not prove every internal link, breadcrumb, or body CTA is correctly weighted across the site.",
+          "notes": "Existing parity evidence says major body backlink repairs were completed; current run did not recrawl every body link."
+        },
+        "demand": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "gsc_strike_zone_refresh",
+          "dayOneTactic": "Turn GSC high-impression low-CTR queries and rank-tracker wins into title/meta and internal-link edits for priority pages.",
+          "proofRequired": "Before/after query-page table plus retest window showing CTR, impressions, and rank movement.",
+          "whatProves": "GSC and GA4 exports provide last-7 and last-28 day search/traffic windows; DataForSEO rank tracker snapshot exists from June 12.",
+          "whatCannotProve": "It does not prove fresh keyword expansion, current SERP competitors, or prompt-derived demand beyond saved snapshots.",
+          "notes": "Last 7 export days: 74 clicks, 6025 impressions, 1.23 percent CTR, avg position 15.1."
+        },
+        "proof": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "proof_asset_consistency_and_old_copy_cleanup",
+          "dayOneTactic": "Audit older pages/posts for outdated language, missing proof context, weak authorship/date treatment, and mismatched CFP terminology.",
+          "proofRequired": "Content QA table with fixed or intentionally retained pages and a fresh crawl/indexability readback.",
+          "whatProves": "Homepage, equipment financing, case studies, contact, Pulse, and AI artifact surfaces are live and public-readable.",
+          "whatCannotProve": "It does not prove all older posts, author/date displays, proof source handling, or client-sensitive proof guardrails are clean.",
+          "notes": "May/June prepared proof assets are source context until reflected on production URLs and launch ledgers."
+        },
+        "authority": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "approved_high_quality_corroboration",
+          "dayOneTactic": "Prepare approval-gated outreach/citation targets from the Ahrefs evidence, excluding spammy or paid-link patterns.",
+          "proofRequired": "Approved target list, sent/earned link ledger, and later Ahrefs/GSC link readback.",
+          "whatProves": "Ahrefs authority baseline exists: CFP DR 12, 412 referring domains, 3745 backlinks; equipmentleases.com comparison DR 32.",
+          "whatCannotProve": "It does not prove outreach has been approved, sent, earned, or cleaned up after purchased-link risk.",
+          "notes": "Authority gap is material but should not be solved with duplicate directories or risky paid placements."
+        },
+        "local": {
+          "band": "blocked",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "bing_citation_review_zernio_execution_queue",
+          "dayOneTactic": "Bing Places readback/import: Open existing Bing Places dashboard, search before create, import from Google only if no duplicate and ownership path is clear. Review/reputation action plan: Draft compliant ask cadence and response policy; do not send asks without recipient/source approval. Citation duplicates/conflicts: Use ledger to classify each citation as keep/repair/claim/ignore/paid-hold; avoid duplicate listings. Local pages and service-area fit: Use Utah page proof, then repair/refine remaining local/referral surface fit with live QA.",
+          "proofRequired": "GBP field readback, canonical NAP/local-page proof, review-count API or manual proof, Bing Places readback/import proof, citation cleanup ledger, Zernio mapping reconciliation, and explicit Apple exclusion.",
+          "whatProves": "Global account registry indicates GBP/Bing Places access paths exist and CFP local/entity work has historical evidence.",
+          "whatCannotProve": "It does not prove the current GBP website field, category/services, location status, reviews, or duplicate state.",
+          "notes": "Runtime local-entity packet applied after James approved manual readback/repair. Current GBP location, website, profile quality, NAP, and seven-review baseline are verified or partially verified. Checklist: 9 done, 6 open/excluded, 0 blocked. Remaining metrics: Bing Places profile state: missing_readback; Current review body/reply/recency export: blocked_provider; Citation duplicate repair receipts: missing_execution; Zernio mapping verified state: partial_or_missing; Review/reputation outreach receipts: missing_execution Apple Business Connect is excluded by user for this run. Do not create duplicate local listings."
+        },
+        "aigeo": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "prompt_citation_baseline_and_source_graph",
+          "dayOneTactic": "Run a cost-capped prompt/citation baseline from GSC, DataForSEO, and sales questions, then build cited-source gap actions.",
+          "proofRequired": "Prompt run with answer visibility, mention/citation counts, cited source ledger, and retest dates.",
+          "whatProves": "AI/GDO artifacts and robots permissions are publicly readable and mention CFP/equipment financing/contact where relevant.",
+          "whatCannotProve": "It does not prove LLM answers cite or mention CFP; June 12 rank-tracker/AI snapshot showed AI Overview presence but family citations at 0.",
+          "notes": "Artifacts are live; answer visibility is still constrained."
+        },
+        "perf": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "homepage_url_level_cls_and_template_waterfall",
+          "dayOneTactic": "Use existing GTmetrix/CrUX proof to prepare CLS/template fixes, then rerun PSI/CrUX/GTmetrix after quota or approved credit use.",
+          "proofRequired": "Fresh PSI/CrUX/GTmetrix readback showing CLS and key template metrics improved or explained.",
+          "whatProves": "Current PSI API attempt returned quota-exhausted, while prior GTmetrix/CrUX evidence is available in the CFP audit packet.",
+          "whatCannotProve": "It does not prove fresh PSI lab scores today; prior field evidence still needs current validation after quota is available.",
+          "notes": "PSI returned quota exceeded on June 15; prior evidence noted GTmetrix A/95 but URL-level CrUX CLS risk."
+        },
+        "trust": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "automated_a11y_html_security_sweep",
+          "dayOneTactic": "Run axe/Pa11y, Nu HTML/resource checks, and SecurityHeaders/SSL Labs before creating hardening issues.",
+          "proofRequired": "Dated a11y/security/html reports with pass/fail rows and retest after approved fixes.",
+          "whatProves": "Homepage returns 200 behind Cloudflare with HSTS and x-content-type-options nosniff plus New Reward edge headers.",
+          "whatCannotProve": "It does not prove full security header posture, SSL Labs result, accessibility conformance, or HTML validity.",
+          "notes": "Header proof is public evidence only, not Cloudflare API ownership proof."
+        },
+        "cro": {
+          "band": "blocked",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "forms_phone_clarity_first_data",
+          "dayOneTactic": "Complete #120 BP1 readbacks: public routes/forms and phone links are verified, while GTM/GA4 event firing, Gravity source fields, and Clarity first-data remain open.",
+          "proofRequired": "Public route/form/phone/source-field map, no-submit synthetic plan, Tag Assistant/GTM Preview or GA4 DebugView/export, Gravity source-field proof, and Clarity first-data readback.",
+          "whatProves": "Public page includes GA4 and GTM IDs, and existing exports include GA4 event counts plus sanitized Gravity saved-entry aggregates.",
+          "whatCannotProve": "It does not prove GTM conversion firing quality, source preservation, phone tracking quality, Clarity behavior data, or lead quality.",
+          "notes": "Runtime CRO packet applied after standing approval. Public form routes: contact, quote, broker_portal, broker_application, faq. Public GTM IDs: GTM-T6TVNZ45. Public GA4 IDs: G-QZ1P2GDYBH. Public Clarity detected: no. Do not claim Clarity first-data, GTM admin proof, or Gravity source-field repair until provider readbacks exist."
+        },
+        "attribution": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-12 to 2026-06-15",
+          "highestLift": "monitoring_runtime_and_source_preservation_first_checks",
+          "dayOneTactic": "Use GA4/Gravity/Clay as the measurement base, avoid CRM outcome asks in this run, and add monitoring/source-preservation checks where approved.",
+          "proofRequired": "Current report continues to separate GA4 intent, Gravity saved entries, Clay handoff evidence, and unavailable outcome-quality labels.",
+          "whatProves": "GSC, GA4, Gravity, Clay, authority, and recovery summaries support intent, saved-entry, and handoff reporting with corrected scope labels.",
+          "whatCannotProve": "It cannot prove accepted opportunities, funded deals, revenue, or final CRM outcomes because that layer is unavailable and excluded from this run.",
+          "notes": "Corrected: CRM outcome/export is not a current-run blocker; outcome/revenue proof remains unclaimed."
+        }
+      },
+      "changes": [
+        {
+          "what": "Use the existing GA4/Gravity/Clay reconciliation and remove CRM outcome/export as a current-run action blocker.",
+          "targets": [
+            "attribution"
+          ],
+          "source": "action-queue#A1",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Bing Places readback/import: Open existing Bing Places dashboard, search before create, import from Google only if no duplicate and ownership path is clear. Review/reputation action plan: Draft compliant ask cadence and response policy; do not send asks without recipient/source approval. Citation duplicates/conflicts: Use ledger to classify each citation as keep/repair/claim/ignore/paid-hold; avoid duplicate listings. Local pages and service-area fit: Use Utah page proof, then repair/refine remaining local/referral surface fit with live QA.",
+          "targets": [
+            "local"
+          ],
+          "source": "action-queue#A2",
+          "status": "suggested",
+          "expected": "+"
+        },
+        {
+          "what": "Create A3 baseline from saved DataForSEO rank tracker, GSC queries, and public AI artifact readback; do not launch new paid run without explicit approval.",
+          "targets": [
+            "aigeo"
+          ],
+          "source": "action-queue#A3",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Prepare high-quality target list from existing Ahrefs evidence; stop before outreach until approved.",
+          "targets": [
+            "authority"
+          ],
+          "source": "action-queue#A4",
+          "status": "suggested",
+          "expected": "+"
+        },
+        {
+          "what": "Prepare a CMS-safe CLS/template repair issue and rerun PSI/CrUX/GTmetrix after quota/approval.",
+          "targets": [
+            "perf"
+          ],
+          "source": "action-queue#A5",
+          "status": "suggested",
+          "expected": "+"
+        },
+        {
+          "what": "Create approved redirect rules for /equipment-financing/ plus equipment-to-equipment-financing variants to the canonical equipment-financing service page.",
+          "targets": [
+            "crawl"
+          ],
+          "source": "action-queue#A6",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Use the existing Clarity/GTM/CMS objects only after duplicate-object readback; run current Tag Assistant/GA4 proof and no-submit/approved synthetic tests under #120.",
+          "targets": [
+            "cro"
+          ],
+          "source": "action-queue#A7",
+          "status": "suggested",
+          "expected": "+"
+        },
+        {
+          "what": "Use read-only broker evidence to reconcile cfp, commercial-funding-partners, commercial-funding-partners-6138, and commercial-funding-partners-7235 before provider writes.",
+          "targets": [
+            "access"
+          ],
+          "source": "action-queue#A8",
+          "status": "suggested",
+          "expected": "+"
+        }
+      ]
+    }
+  ]
+}

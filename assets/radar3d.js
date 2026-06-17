@@ -157,9 +157,79 @@ export function mountRadar3D(root, timeline) {
   overlay.addEventListener("focusout", e => { if (e.target.closest(".vp-eye")) hideTip(); });
   overlay.addEventListener("click", e => {
     const b = e.target.closest(".vp-eye");
-    if (b) { const i = +b.dataset.i; if (tipPinned && tipAxis === i) closeTip(); else { tipPinned = true; showTip(i); } }
+    if (b) openDrill(+b.dataset.i);
     else if (tipPinned) closeTip();
   });
+
+  // ---- drill-down: per-axis sub-spider (real submetrics + provenance) ----
+  // Detail-on-demand over the overview: the eye opens a focused sub-radar of the
+  // axis's submetrics (radius = score; node size ∝ weight, so the submetrics that
+  // actually drive the axis score dominate the eye), plus "where this comes from"
+  // (the evidence systems), the highest-lift submetric, the day-one action, and the
+  // honest confidence caveat. Falls back to the hover brief when an axis has no
+  // submetric data (e.g. the synthetic demo rings).
+  const subm = timeline.submetrics || {};
+  const drill = document.createElement("div");
+  drill.className = "vp-drill"; drill.hidden = true;
+  drill.setAttribute("role", "dialog"); drill.setAttribute("aria-modal", "true");
+  drill.setAttribute("aria-label", "Submetric detail");
+  root.appendChild(drill);
+  let lastFocus = null;
+
+  function subRadarSVG(list) {
+    const cx = 170, cy = 158, R = 116, n = list.length, A = i => -Math.PI / 2 + TAU * i / n;
+    const ring = lv => { let d = ""; for (let i = 0; i <= n; i++) { const a = A(i % n), rr = R * lv / 100; d += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1) + " "; } return `<path d="${d}Z" fill="none" stroke="${lv === 100 ? "#c4d2c8" : "#e6ece6"}" stroke-width="1"/>`; };
+    let svg = [25, 50, 75, 100].map(ring).join("");
+    for (let i = 0; i < n; i++) { const a = A(i); svg += `<line x1="${cx}" y1="${cy}" x2="${(cx + Math.cos(a) * R).toFixed(1)}" y2="${(cy + Math.sin(a) * R).toFixed(1)}" stroke="#e6ece6" stroke-width="1"/>`; }
+    let poly = ""; for (let i = 0; i < n; i++) { const a = A(i), rr = R * clamp(num(list[i].score), 0, 100) / 100; poly += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1) + " "; }
+    svg += `<path d="${poly}Z" fill="rgba(39,95,85,.14)" stroke="#275f55" stroke-width="2" stroke-linejoin="round"/>`;
+    for (let i = 0; i < n; i++) {
+      const a = A(i), s = clamp(num(list[i].score), 0, 100), rr = R * s / 100, x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      const wr = 3 + 4 * (clamp(num(list[i].weight), 0, 20) / 20);
+      svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${wr.toFixed(1)}" fill="${bandCss(s)}" stroke="#fff" stroke-width="1.5"/>`;
+      const lx = cx + Math.cos(a) * (R + 13), ly = cy + Math.sin(a) * (R + 13);
+      svg += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-size="11" font-weight="800" fill="#46524b" text-anchor="middle" dominant-baseline="central">${i + 1}</text>`;
+    }
+    return `<svg class="vp-subradar" viewBox="0 0 340 312" role="img" aria-label="${list.length} submetrics, radius = score, node size = weight">${svg}</svg>`;
+  }
+
+  function openDrill(i) {
+    const key = axes[i].key, list = (subm[key] || []).slice();
+    if (!list.length) { tipPinned = true; showTip(i); return; }   // no drill data → quick brief
+    const m = meas[selected], s = clamp(num(m.scores[key]), 0, 100), det = (m.detail || {})[key] || {};
+    lastFocus = document.activeElement;
+    const sys = new Set(); list.forEach(x => (x.evidenceSystems || []).forEach(v => sys.add(v)));
+    const hl = det.highestLift, hlItem = list.find(x => x.key === hl);
+    let h = `<div class="vp-drill-card" role="document">` +
+      `<button class="vp-drill-x" type="button" aria-label="Close detail">×</button>` +
+      `<div class="vp-drill-head"><div class="vp-drill-id"><div class="vp-drill-ax">${esc(axes[i].label)}</div>` +
+      `<div class="vp-drill-meta">${list.length} submetrics${det.sourceWindow ? " · " + esc(det.sourceWindow) : ""}</div></div>` +
+      `<span class="vp-drill-score" style="color:${bandCss(s)}">${s}<span>/100</span></span>` +
+      `<span class="vp-pill ${bandKey(s)}">${bandLabel(s)}</span>` +
+      (det.confidence ? `<span class="vp-conf">${esc(det.confidence.replace(/_/g, " "))}</span>` : "") +
+      `</div>` +
+      `<div class="vp-drill-body"><div class="vp-drill-left">${subRadarSVG(list)}</div><div class="vp-drill-right">`;
+    if (hl) h += `<div class="vp-drill-hl"><span class="vp-hl-tag">Highest lift</span><b>${esc(hlItem ? hlItem.label : hl)}</b></div>`;
+    if (det.dayOneTactic) h += `<div class="vp-drill-act"><div class="vp-drill-lbl">Day-one action</div><p>${esc(det.dayOneTactic)}</p></div>`;
+    if (sys.size) h += `<div class="vp-drill-prov"><div class="vp-drill-lbl">Where this comes from</div><div class="vp-prov-chips">${[...sys].slice(0, 14).map(v => `<span>${esc(v)}</span>`).join("")}</div></div>`;
+    h += `</div></div>`;
+    h += `<ol class="vp-drill-list">${list.map((x, idx) => {
+      const ss = clamp(num(x.score), 0, 100);
+      return `<li><span class="vp-li-n" style="background:${bandCss(ss)}">${idx + 1}</span>` +
+        `<div class="vp-li-main"><div class="vp-li-top"><b>${esc(x.label)}</b><span class="vp-li-score" style="color:${bandCss(ss)}">${ss}</span></div>` +
+        `<div class="vp-li-bar"><span style="width:${ss}%;background:${bandCss(ss)}"></span></div>` +
+        ((x.sourceExamples || []).length ? `<div class="vp-li-src">${esc(x.sourceExamples.join(" · "))}</div>` : "") +
+        `</div><span class="vp-li-w" title="weight in the axis score">${esc(x.weight)}%</span></li>`;
+    }).join("")}</ol>`;
+    if (det.whatCannotProve) h += `<div class="vp-drill-caveat"><b>Can't yet prove —</b> ${esc(det.whatCannotProve)}</div>`;
+    h += `</div>`;
+    drill.innerHTML = h;
+    drill.hidden = false;
+    const xb = drill.querySelector(".vp-drill-x"); if (xb) xb.focus();
+  }
+  function closeDrill() { if (drill.hidden) return; drill.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  drill.addEventListener("click", e => { if (e.target === drill || e.target.closest(".vp-drill-x")) closeDrill(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !drill.hidden) closeDrill(); });
 
   // ---- side causal panel + timestamp chips (shared) ----
   function deltaChip(d) { return d ? ` <span class="vp-d ${d > 0 ? "up" : "down"}">${d > 0 ? "+" : ""}${d}</span>` : ""; }
