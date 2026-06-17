@@ -74,7 +74,7 @@ export function mountRadar3D(root, timeline) {
       <div class="vp-hint"></div>
     </div>
     <div class="vp-stage">
-      <div class="vp-scene"><div class="vp-overlay" aria-hidden="true"></div></div>
+      <div class="vp-scene"><div class="vp-overlay"></div></div>
       <aside class="vp-side"></aside>
     </div>
     <div class="vp-rank" aria-label="Axes ranked by score"></div>
@@ -119,7 +119,7 @@ export function mountRadar3D(root, timeline) {
       chips3d[i].innerHTML =
         `<div class="vp-axhead"><span class="vp-axcl" style="background:${axes[i].cluster ? axes[i].cluster.color : "transparent"}" title="${axes[i].cluster ? esc(axes[i].cluster.label) : ""}"></span><strong>${esc(axes[i].label)}</strong>` +
         `<span class="vp-score" style="color:${col};background:${col}1f">${s}</span>` +
-        `<button class="vp-eye" type="button" data-i="${i}" aria-label="${esc(axes[i].label)} detail" aria-expanded="false">` +
+        `<button class="vp-eye" type="button" data-i="${i}" aria-label="${esc(axes[i].label)} detail" aria-haspopup="dialog">` +
         `<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>` +
         `</button></div>` +
         `<div class="vp-axisbar"><span style="width:${s}%;background:${col}"></span></div>`;
@@ -345,6 +345,7 @@ export function mountRadar3D(root, timeline) {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.domElement.className = "vp-canvas";
+    renderer.domElement.setAttribute("aria-hidden", "true");   // decorative; chips/rank are the accessible layer
     sceneEl.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -524,7 +525,7 @@ export function mountRadar3D(root, timeline) {
     btnOrbit.disabled = true;
     overlay.style.opacity = "1";
     overlay.classList.add("vp-int");   // canvas mode is always face-on detail → chips interactive
-    const canvas = document.createElement("canvas"); canvas.className = "vp-canvas"; sceneEl.appendChild(canvas);
+    const canvas = document.createElement("canvas"); canvas.className = "vp-canvas"; canvas.setAttribute("aria-hidden", "true"); sceneEl.appendChild(canvas);
     const ctx = canvas.getContext("2d");
     let W = 0, H = 0, DPR = 1, cx = 0, cy = 0, Rpx = 0;
 

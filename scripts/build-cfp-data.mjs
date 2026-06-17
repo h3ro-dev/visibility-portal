@@ -122,6 +122,6 @@ const out = {
 
 const outPath = resolve(REPO, "data/timeline.cfp.json");
 writeFileSync(outPath, JSON.stringify(out, null, 2) + "\n");
-const avg = Math.round(Object.values(scores).reduce((s, v) => s + v, 0) / Object.keys(scores).length);
+const avg = Math.round(Object.values(scores).reduce((s, v) => s + v, 0) / (Object.keys(scores).length || 1));
 console.log(`✓ wrote ${outPath}`);
 console.log(`  ${Object.keys(scores).length} axes · avg ${avg} · ${changes.length} real changes · ${Object.values(submetrics).reduce((n, a) => n + a.length, 0)} submetrics`);

@@ -129,7 +129,7 @@
 .vp-drill-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
 .vp-drill-score { font-family: ui-monospace, Menlo, monospace; font-size: 30px; font-weight: 900; line-height: 1; }
 .vp-drill-score span { color: var(--muted); font-size: 13px; font-weight: 700; }
-.vp-conf { background: #eef3ef; border-radius: 999px; color: #46606f; font-size: 10px; font-weight: 800;
+.vp-conf { background: #eef3ef; border-radius: 999px; color: #3a4f5c; font-size: 10px; font-weight: 800;
   letter-spacing: .02em; padding: 3px 9px; text-transform: capitalize; }
 .vp-drill-body { align-items: start; display: grid; gap: 18px; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); margin-top: 16px; }
 .vp-subradar { display: block; height: auto; width: 100%; }
@@ -162,7 +162,7 @@
 .vp-runbadge { border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: .03em; padding: 3px 9px; text-transform: uppercase; }
 .vp-runbadge[hidden] { display: none; }
 .vp-runbadge.live { background: #e5f3e9; color: var(--good); text-transform: none; letter-spacing: 0; }
-.vp-runbadge.demo { background: #eef1ee; color: #8a948d; }
+.vp-runbadge.demo { background: #eef1ee; color: #586058; }
 
 /* ---- weak-axis pop on the face-on chips (Von Restorff) ---- */
 .vp-axis.weak { border-color: #e6c3c3; box-shadow: 0 0 0 1px #f0d2d2, 0 10px 26px -22px rgba(155, 36, 36, .55); }
