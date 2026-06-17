@@ -197,6 +197,18 @@
 .sr3d-runbadge.live { background: #e5f3e9; color: var(--sr-good); letter-spacing: 0; text-transform: none; }
 .sr3d-runbadge.demo { background: #eef1ee; color: #8a948d; }
 
+/* ===== cluster summary strip: the chunked, group-level read ===== */
+.sr3d-cluster-strip { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+.sr3d-cluster-card { background: #fff; border: 1px solid var(--sr-line); border-left: 4px solid var(--cl); border-radius: 10px; padding: 9px 12px; }
+.sr3d-cluster-top { align-items: baseline; display: flex; gap: 8px; justify-content: space-between; }
+.sr3d-cluster-name { color: var(--cl); font-size: 12px; font-weight: 800; }
+.sr3d-cluster-avg { font-family: ui-monospace, Menlo, monospace; font-size: 17px; font-weight: 900; }
+.sr3d-cluster-bar { background: #e6ede8; border-radius: 999px; height: 5px; margin: 6px 0 5px; overflow: hidden; }
+.sr3d-cluster-bar span { background: var(--cl); border-radius: 999px; display: block; height: 100%; }
+.sr3d-cluster-axes { color: var(--sr-muted); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 680px) { .sr3d-cluster-strip { grid-template-columns: 1fr; } }
+.sr3d-drill-cl { background: color-mix(in srgb, var(--cl) 14%, #fff); border-radius: 999px; color: var(--cl); font-size: 10px; font-weight: 800; padding: 2px 7px; }
+
 /* ===== ranked bar-rail: radar = gestalt, bars = precise ranking ===== */
 .sr3d-rank { margin-top: 16px; }
 .sr3d-rank-h { align-items: baseline; display: flex; gap: 10px; margin-bottom: 9px; }
@@ -204,8 +216,9 @@
 .sr3d-rank-sub { color: var(--sr-muted); font-size: 11px; }
 .sr3d-rank-grid { display: grid; gap: 6px 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .sr3d-rank-row { align-items: center; background: #fff; border: 1px solid var(--sr-line); border-radius: 9px; cursor: default;
-  display: grid; gap: 9px; grid-template-columns: 18px minmax(72px, 0.9fr) minmax(0, 1.3fr) auto 10px; padding: 6px 10px; text-align: left; width: 100%;
+  display: grid; gap: 9px; grid-template-columns: 16px 8px minmax(64px, 0.9fr) minmax(0, 1.3fr) auto 10px; padding: 6px 10px; text-align: left; width: 100%;
   transition: transform 120ms var(--sr-ease-out), background-color 140ms ease, border-color 140ms ease; }
+.sr3d-rank-cl { border-radius: 3px; height: 14px; width: 8px; }
 .sr3d-rank-row.drillable { cursor: pointer; }
 .sr3d-rank-row.drillable:active { transform: scale(0.99); }
 @media (hover: hover) and (pointer: fine) { .sr3d-rank-row.drillable:hover { background: #f6fbf8; border-color: #b8c7bc; } }

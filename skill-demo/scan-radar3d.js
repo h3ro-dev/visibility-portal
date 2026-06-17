@@ -46,10 +46,37 @@
     });
   }
 
+  // Cluster grouping (IA chunking): chunk the axes into a few groups and reorder so
+  // each group is a contiguous arc. Cluster is a SEPARATE channel from health — a
+  // named label (primary cue) + faint desaturated sector. Cool/muted palette clear
+  // of the green/amber/red health scale. Override per-timeline via timeline.clusters.
+  var DEFAULT_CLUSTERS = [
+    { key: "foundation", label: "Foundation", color: "#44598a", axes: ["access", "crawl", "ia", "perf"] },
+    { key: "credibility", label: "Credibility", color: "#7a566f", axes: ["proof", "authority", "trust", "local"] },
+    { key: "demand", label: "Demand & Conversion", color: "#2f7d86", axes: ["demand", "aigeo", "cro", "attribution"] }
+  ];
+  function clusterOrder(rawAxes, clusters) {
+    var byKey = {}; rawAxes.forEach(function (a) { byKey[a.key] = a; });
+    var out = [], seen = {};
+    clusters.forEach(function (c) { c.axes.forEach(function (k) { if (byKey[k]) { var a = {}; for (var p in byKey[k]) a[p] = byKey[k][p]; a.cluster = c; out.push(a); seen[k] = 1; } }); });
+    rawAxes.forEach(function (a) { if (!seen[a.key]) { var b = {}; for (var q in a) b[q] = a[q]; b.cluster = null; out.push(b); } });
+    return out;
+  }
+  function clusterSpans(axes) {
+    var spans = [], cur = null;
+    axes.forEach(function (a, i) {
+      if (!a.cluster) { cur = null; return; }
+      if (cur && cur.cluster === a.cluster) cur.end = i;
+      else { cur = { cluster: a.cluster, start: i, end: i }; spans.push(cur); }
+    });
+    return spans;
+  }
+
   function create(root, opts) {
     opts = opts || {};
     var timeline = opts.timeline || { axes: [], measurements: [] };
-    var axes = timeline.axes || [];
+    var axes = clusterOrder(timeline.axes || [], timeline.clusters || DEFAULT_CLUSTERS);
+    var spans = clusterSpans(axes);
     var measurements = (timeline.measurements || []).slice();
     var N = axes.length;
     var M = measurements.length;
@@ -244,6 +271,12 @@
       var R = radius() * 1.15;
       var cx = W / 2, cy = H / 2, t = st.selected;
       var levels = [20, 40, 60, 80, 100];
+      // faint cluster sectors behind the grid (separate channel from health)
+      spans.forEach(function (sp) {
+        var a0 = -Math.PI / 2 + TAU * (sp.start - 0.5) / N, a1 = -Math.PI / 2 + TAU * (sp.end + 0.5) / N;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R * 1.02, a0, a1); ctx.closePath();
+        ctx.fillStyle = sp.cluster.color; ctx.globalAlpha = 0.07; ctx.fill(); ctx.globalAlpha = 1;
+      });
       // grid rings
       levels.forEach(function (lv) {
         ctx.beginPath();
@@ -266,6 +299,14 @@
         ctx.textAlign = Math.cos(ang) > 0.2 ? "left" : Math.cos(ang) < -0.2 ? "right" : "center";
         ctx.fillStyle = COLORS.ink; ctx.fillText(axes[i].label, lx, ly);
       }
+      // cluster name labels at each arc midpoint (further out than axis labels)
+      ctx.font = "800 12px Inter, system-ui, sans-serif";
+      spans.forEach(function (sp) {
+        var mid = -Math.PI / 2 + TAU * (sp.start + sp.end) / 2 / N;
+        var lx = cx + Math.cos(mid) * (R + 46), ly = cy + Math.sin(mid) * (R + 46);
+        ctx.fillStyle = sp.cluster.color; ctx.textAlign = Math.cos(mid) > 0.2 ? "left" : Math.cos(mid) < -0.2 ? "right" : "center";
+        ctx.fillText(sp.cluster.label, lx, ly);
+      });
       // polygon
       var avg = avgScore(t);
       ctx.beginPath();
@@ -375,18 +416,28 @@
     // ---- ranked bar-rail: radar gives gestalt (shape); a sorted bar list gives the
     // exact ranking the radar's angle/area can't. Weakest / blocked axes are flagged
     // (Von Restorff) and a confidence dot per axis surfaces trust. Rows open the drill. ----
+    function clusterAvg(sp, t) { var s = 0, n = 0; for (var i = sp.start; i <= sp.end; i++) { s += clamp(num(measurements[t].scores[axes[i].key]), 0, 100); n++; } return Math.round(s / (n || 1)); }
     function renderRank() {
       var t = st.selected, m = measurements[t], hasDetail = !!m.detail;
+      var strip = spans.length ? '<div class="sr3d-cluster-strip">' + spans.map(function (sp) {
+        var av = clusterAvg(sp, t);
+        return '<div class="sr3d-cluster-card" style="--cl:' + sp.cluster.color + '">' +
+          '<div class="sr3d-cluster-top"><span class="sr3d-cluster-name">' + esc(sp.cluster.label) + '</span><span class="sr3d-cluster-avg" style="color:' + bandColor(av) + '">' + av + "</span></div>" +
+          '<div class="sr3d-cluster-bar"><span style="width:' + av + '%"></span></div>' +
+          '<div class="sr3d-cluster-axes">' + esc(axes.slice(sp.start, sp.end + 1).map(function (a) { return a.label; }).join(" · ")) + "</div>" +
+          "</div>";
+      }).join("") + "</div>" : "";
       var rows = axes.map(function (a, i) {
-        return { i: i, label: a.label, key: a.key, s: clamp(num(m.scores[a.key]), 0, 100), band: detOf(t, a.key).band, conf: detOf(t, a.key).confidence };
+        return { i: i, label: a.label, key: a.key, cl: a.cluster, s: clamp(num(m.scores[a.key]), 0, 100), band: detOf(t, a.key).band, conf: detOf(t, a.key).confidence };
       }).sort(function (x, y) { return y.s - x.s; });
-      var html = '<div class="sr3d-rank-h"><span>Where you stand</span><span class="sr3d-rank-sub">' + esc(m.timestamp) + " · ranked by score" + (hasDetail ? " · dot = confidence" : "") + "</span></div>";
+      var html = strip + '<div class="sr3d-rank-h"><span>Where you stand</span><span class="sr3d-rank-sub">' + esc(m.timestamp) + " · ranked by score" + (hasDetail ? " · dot = confidence" : "") + "</span></div>";
       html += '<div class="sr3d-rank-grid">';
       rows.forEach(function (r, idx) {
         var weak = r.band ? (r.band === "blocked" || r.band === "constrained") : r.s < BANDS.watch;
         var has = (subm[r.key] || []).length;
         html += '<button class="sr3d-rank-row' + (weak ? " weak" : "") + (has ? " drillable" : "") + '" data-i="' + r.i + '" type="button">' +
           '<span class="sr3d-rank-n">' + (idx + 1) + "</span>" +
+          '<span class="sr3d-rank-cl" style="background:' + (r.cl ? r.cl.color : "transparent") + '" title="' + (r.cl ? esc(r.cl.label) : "") + '"></span>' +
           '<span class="sr3d-rank-lab">' + esc(r.label) + "</span>" +
           '<span class="sr3d-rank-bar"><span style="width:' + r.s + "%;background:" + bandColor(r.s) + '"></span></span>' +
           '<span class="sr3d-rank-sc" style="color:' + bandColor(r.s) + '">' + r.s + "</span>" +
@@ -431,7 +482,7 @@
       var h = '<div class="sr3d-drill-card" role="document">' +
         '<button class="sr3d-drill-x" type="button" aria-label="Close detail">×</button>' +
         '<div class="sr3d-drill-head"><div class="sr3d-drill-id"><div class="sr3d-drill-ax">' + esc(axes[i].label) + "</div>" +
-        '<div class="sr3d-drill-meta">' + list.length + " submetrics" + (det.sourceWindow ? " · " + esc(det.sourceWindow) : "") + "</div></div>" +
+        '<div class="sr3d-drill-meta">' + (axes[i].cluster ? '<span class="sr3d-drill-cl" style="--cl:' + axes[i].cluster.color + '">' + esc(axes[i].cluster.label) + "</span> " : "") + list.length + " submetrics" + (det.sourceWindow ? " · " + esc(det.sourceWindow) : "") + "</div></div>" +
         '<span class="sr3d-drill-score" style="color:' + bandColor(s) + '">' + s + "<span>/100</span></span>" +
         '<span class="sr3d-pill ' + bandKey(s) + '">' + bandLabel(s) + "</span>" +
         (det.confidence ? '<span class="sr3d-conf">' + esc(det.confidence.replace(/_/g, " ")) + "</span>" : "") +
