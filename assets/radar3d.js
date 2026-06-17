@@ -199,7 +199,9 @@ export function mountRadar3D(root, timeline) {
     const m = meas[selected], s = clamp(num(m.scores[key]), 0, 100), det = (m.detail || {})[key] || {};
     lastFocus = document.activeElement;
     const sys = new Set(); list.forEach(x => (x.evidenceSystems || []).forEach(v => sys.add(v)));
+    const titleCase = s => String(s || "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
     const hl = det.highestLift, hlItem = list.find(x => x.key === hl);
+    const hlLabel = hlItem ? hlItem.label : titleCase(hl);
     let h = `<div class="vp-drill-card" role="document">` +
       `<button class="vp-drill-x" type="button" aria-label="Close detail">×</button>` +
       `<div class="vp-drill-head"><div class="vp-drill-id"><div class="vp-drill-ax">${esc(axes[i].label)}</div>` +
@@ -209,7 +211,7 @@ export function mountRadar3D(root, timeline) {
       (det.confidence ? `<span class="vp-conf">${esc(det.confidence.replace(/_/g, " "))}</span>` : "") +
       `</div>` +
       `<div class="vp-drill-body"><div class="vp-drill-left">${subRadarSVG(list)}</div><div class="vp-drill-right">`;
-    if (hl) h += `<div class="vp-drill-hl"><span class="vp-hl-tag">Highest lift</span><b>${esc(hlItem ? hlItem.label : hl)}</b></div>`;
+    if (hl) h += `<div class="vp-drill-hl"><span class="vp-hl-tag">Highest lift</span><b>${esc(hlLabel)}</b></div>`;
     if (det.dayOneTactic) h += `<div class="vp-drill-act"><div class="vp-drill-lbl">Day-one action</div><p>${esc(det.dayOneTactic)}</p></div>`;
     if (sys.size) h += `<div class="vp-drill-prov"><div class="vp-drill-lbl">Where this comes from</div><div class="vp-prov-chips">${[...sys].slice(0, 14).map(v => `<span>${esc(v)}</span>`).join("")}</div></div>`;
     h += `</div></div>`;
