@@ -117,7 +117,7 @@ export function mountRadar3D(root, timeline) {
       const weak = det && det.band ? (det.band === "blocked" || det.band === "constrained") : s < BAND.watch;
       chips3d[i].classList.toggle("weak", weak);   // Von Restorff: let the axes that need attention pop
       chips3d[i].innerHTML =
-        `<div class="vp-axhead"><strong>${esc(axes[i].label)}</strong>` +
+        `<div class="vp-axhead"><span class="vp-axcl" style="background:${axes[i].cluster ? axes[i].cluster.color : "transparent"}" title="${axes[i].cluster ? esc(axes[i].cluster.label) : ""}"></span><strong>${esc(axes[i].label)}</strong>` +
         `<span class="vp-score" style="color:${col};background:${col}1f">${s}</span>` +
         `<button class="vp-eye" type="button" data-i="${i}" aria-label="${esc(axes[i].label)} detail" aria-expanded="false">` +
         `<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>` +
@@ -431,25 +431,9 @@ export function mountRadar3D(root, timeline) {
       labels.add(sp); dateLabels.push(sp);
     }
 
-    // ---- cluster layer: faint sector wedges + named pills on the front face ----
-    // Cluster = a separate channel from health. Sectors are very low-opacity so they
-    // never compete with the data; the named pill is the primary (colour-independent)
-    // cue. The whole layer is a face-on concept, so it fades OUT as you orbit.
-    const clusterLayer = new THREE.Group(); scene.add(clusterLayer);
-    spans.forEach(sp => {
-      const a0 = -Math.PI / 2 + TAU * (sp.start - 0.5) / N, a1 = -Math.PI / 2 + TAU * (sp.end + 0.5) / N;
-      const seg = 12, pos = [], z = zOf(M - 1) - 0.02, rr = R * 1.05;
-      for (let s = 0; s < seg; s++) {
-        const t0 = a0 + (a1 - a0) * s / seg, t1 = a0 + (a1 - a0) * (s + 1) / seg;
-        pos.push(0, 0, z, Math.cos(t0) * rr, Math.sin(t0) * rr, z, Math.cos(t1) * rr, Math.sin(t1) * rr, z);
-      }
-      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-      const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: new THREE.Color(sp.cluster.color), transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
-      mesh.renderOrder = -1; mesh.userData.base = 0.07; clusterLayer.add(mesh);
-      const mid = (a0 + a1) / 2, lr = R * 1.5;
-      const pill = makeLabel(sp.cluster.label, { font: 19, world: 0.0040, color: "#fff", bg: sp.cluster.color, border: "rgba(0,0,0,0)" });
-      pill.position.set(Math.cos(mid) * lr, Math.sin(mid) * lr, zOf(M - 1)); pill.userData.base = 1; clusterLayer.add(pill);
-    });
+    // Cluster cue on the WebGL face-on view lives on the DOM chips (a colour tick,
+    // set in paintOverlayChips) + the named summary strip + the reordered contiguous
+    // arcs — reliable and un-clipped, vs. in-scene pills that collide with the chips.
 
     // Eased camera fly between views. We interpolate in spherical space around
     // the orbit target (radius preserved = zoom kept; camera always looks at the
@@ -526,8 +510,6 @@ export function mountRadar3D(root, timeline) {
       const lop = 1 - op;                       // labels fade in as the face-on chips fade out
       labels.visible = lop > 0.02;
       if (labels.visible) for (const sp of labels.children) sp.material.opacity = sp.userData.base * lop;
-      clusterLayer.visible = op > 0.02;         // cluster sectors/pills are a face-on concept → fade with the overlay
-      if (clusterLayer.visible) for (const o of clusterLayer.children) o.material.opacity = (o.userData.base || 1) * op;
       renderer.render(scene, camera);
       requestAnimationFrame(frame);
     }

@@ -39,6 +39,7 @@
 }
 .vp-overlay.vp-int .vp-axis { pointer-events: auto; }   /* chips interactive only while face-on */
 .vp-axhead { align-items: center; display: flex; gap: 7px; }
+.vp-axcl { border-radius: 2px; flex: none; height: 11px; width: 4px; }
 .vp-axis strong { font-size: 12px; font-weight: 700; margin-right: auto; }
 .vp-score { border-radius: 999px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; font-weight: 900; padding: 2px 7px; }
 .vp-eye {
