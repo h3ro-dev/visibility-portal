@@ -266,7 +266,7 @@ export function mountRadar3D(root, timeline) {
   // blocked axes are flagged (Von Restorff) since "where am I worst + what next" is the
   // job; a confidence dot per axis surfaces how trustworthy each score is. Clicking a
   // row opens that axis's drill-down — same affordance as the eye.
-  function confClass(c) { c = String(c || ""); if (/^(verified|fully)/.test(c) || /provider_verified$/.test(c.replace(/^partial_/, "x"))) return "ok"; if (/partial/.test(c)) return "mid"; if (/block|unverified|missing|none/.test(c)) return "low"; return "mid"; }
+  function confClass(c) { c = String(c || ""); if (/partial/.test(c)) return "mid"; if (/block|unverified|missing|none|unknown/.test(c)) return "low"; if (/verified|fully|complete/.test(c)) return "ok"; return "mid"; }
   function renderRank() {
     const m = meas[selected], det = m.detail || {};
     const rows = axes.map((a, i) => ({ i, label: a.label, key: a.key, s: clamp(num(m.scores[a.key]), 0, 100), band: (det[a.key] || {}).band, conf: (det[a.key] || {}).confidence }))
