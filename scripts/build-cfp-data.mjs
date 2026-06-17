@@ -120,6 +120,19 @@ const out = {
   }),
 };
 
+// Per-submetric history for the drill-down's "mountain range". Only the newest
+// submetric values are real (one run so far); earlier points are synthetic demo
+// backfill (consistent with the demo-history rings), ending at the real score.
+const HM = out.measurements.length;
+for (const pk of Object.keys(submetrics)) {
+  submetrics[pk].forEach((sm, j) => {
+    const s = sm.score, hist = [];
+    for (let k = 0; k < HM; k++) { const base = s - 14 * (HM - 1 - k) / (HM - 1 || 1); const wig = ((j * 7 + k * 5) % 7) - 3; hist.push(Math.max(0, Math.min(100, Math.round(base + wig)))); }
+    if (HM) hist[HM - 1] = s;
+    sm.history = hist;
+  });
+}
+
 const outPath = resolve(REPO, "data/timeline.cfp.json");
 writeFileSync(outPath, JSON.stringify(out, null, 2) + "\n");
 const avg = Math.round(Object.values(scores).reduce((s, v) => s + v, 0) / (Object.keys(scores).length || 1));
