@@ -41,6 +41,7 @@ export function mountRadar3D(root, timeline) {
   root.innerHTML = `
     <div class="vp-bar">
       <div class="vp-title">${esc(timeline.title || "Visibility over time")}</div>
+      <span class="vp-runbadge" hidden></span>
       <button class="vp-btn" data-act="head" type="button">Face-on detail</button>
       <button class="vp-btn" data-act="orbit" type="button">3D time series</button>
       <div class="vp-hint"></div>
@@ -49,12 +50,15 @@ export function mountRadar3D(root, timeline) {
       <div class="vp-scene"><div class="vp-overlay" aria-hidden="true"></div></div>
       <aside class="vp-side"></aside>
     </div>
+    <div class="vp-rank" aria-label="Axes ranked by score"></div>
     <div class="vp-chips"></div>`;
   const sceneEl = root.querySelector(".vp-scene");
   const overlay = root.querySelector(".vp-overlay");
   const sideEl = root.querySelector(".vp-side");
   const chipsEl = root.querySelector(".vp-chips");
   const hintEl = root.querySelector(".vp-hint");
+  const rankEl = root.querySelector(".vp-rank");
+  const runBadge = root.querySelector(".vp-runbadge");
   const btnHead = root.querySelector('[data-act="head"]');
   const btnOrbit = root.querySelector('[data-act="orbit"]');
 
@@ -82,6 +86,9 @@ export function mountRadar3D(root, timeline) {
     const t = selected;
     for (let i = 0; i < N; i++) {
       const s = clamp(num(meas[t].scores[axes[i].key]), 0, 100), col = bandCss(s);
+      const det = (meas[t].detail || {})[axes[i].key];
+      const weak = det && det.band ? (det.band === "blocked" || det.band === "constrained") : s < BAND.watch;
+      chips3d[i].classList.toggle("weak", weak);   // Von Restorff: let the axes that need attention pop
       chips3d[i].innerHTML =
         `<div class="vp-axhead"><strong>${esc(axes[i].label)}</strong>` +
         `<span class="vp-score" style="color:${col};background:${col}1f">${s}</span>` +
@@ -254,13 +261,43 @@ export function mountRadar3D(root, timeline) {
   }
   function renderChips() { chipsEl.innerHTML = meas.map((m, i) => `<button class="vp-chip${i === selected ? " active" : ""}" data-i="${i}" type="button">${esc(m.timestamp)}</button>`).join(""); }
 
+  // ---- ranked bar-rail: precise comparison the radar's angles/area can't give ----
+  // Radar = gestalt (overall shape); a sorted bar list = the exact ranking. Weakest /
+  // blocked axes are flagged (Von Restorff) since "where am I worst + what next" is the
+  // job; a confidence dot per axis surfaces how trustworthy each score is. Clicking a
+  // row opens that axis's drill-down — same affordance as the eye.
+  function confClass(c) { c = String(c || ""); if (/^(verified|fully)/.test(c) || /provider_verified$/.test(c.replace(/^partial_/, "x"))) return "ok"; if (/partial/.test(c)) return "mid"; if (/block|unverified|missing|none/.test(c)) return "low"; return "mid"; }
+  function renderRank() {
+    const m = meas[selected], det = m.detail || {};
+    const rows = axes.map((a, i) => ({ i, label: a.label, key: a.key, s: clamp(num(m.scores[a.key]), 0, 100), band: (det[a.key] || {}).band, conf: (det[a.key] || {}).confidence }))
+      .sort((x, y) => y.s - x.s);
+    rankEl.innerHTML =
+      `<div class="vp-rank-h"><span>Where you stand</span><span class="vp-rank-sub">${esc(m.timestamp)} · ranked by score${(m.detail ? " · dot = confidence" : "")}</span></div>` +
+      `<div class="vp-rank-grid">` + rows.map((r, idx) => {
+        const weak = r.band ? (r.band === "blocked" || r.band === "constrained") : r.s < BAND.watch;
+        return `<button class="vp-rank-row${weak ? " weak" : ""}" data-i="${r.i}" type="button">` +
+          `<span class="vp-rank-n">${idx + 1}</span>` +
+          `<span class="vp-rank-lab">${esc(r.label)}</span>` +
+          `<span class="vp-rank-bar"><span style="width:${r.s}%;background:${bandCss(r.s)}"></span></span>` +
+          `<span class="vp-rank-sc" style="color:${bandCss(r.s)}">${r.s}</span>` +
+          (r.conf ? `<span class="vp-rank-dot ${confClass(r.conf)}" title="${esc(r.conf.replace(/_/g, " "))}"></span>` : `<span class="vp-rank-dot none"></span>`) +
+          `</button>`;
+      }).join("") + `</div>`;
+    if (runBadge) {
+      if (m.real && m.confidence) { runBadge.hidden = false; runBadge.className = "vp-runbadge live"; runBadge.textContent = "● live · " + m.confidence.replace(/_/g, " "); }
+      else if (m.synthetic) { runBadge.hidden = false; runBadge.className = "vp-runbadge demo"; runBadge.textContent = "demo history"; }
+      else { runBadge.hidden = true; }
+    }
+  }
+  rankEl.addEventListener("click", e => { const b = e.target.closest(".vp-rank-row"); if (b) openDrill(+b.dataset.i); });
+
   // engine hooks (assigned by whichever renderer initializes)
   let onSelect = () => {};
-  function select(i) { selected = clamp(i, 0, M - 1); renderSide(); renderChips(); paintOverlayChips(); onSelect(); }
+  function select(i) { selected = clamp(i, 0, M - 1); renderSide(); renderChips(); renderRank(); paintOverlayChips(); onSelect(); }
   chipsEl.addEventListener("click", e => { const b = e.target.closest(".vp-chip"); if (b) select(+b.dataset.i); });
 
   if (webglAvailable()) initWebGL(); else initCanvas();
-  renderSide(); renderChips(); paintOverlayChips(); onSelect();
+  renderSide(); renderChips(); renderRank(); paintOverlayChips(); onSelect();
 
   // =====================================================================
   // WebGL engine (high-quality 3D tube)
