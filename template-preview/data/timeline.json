@@ -1,0 +1,1358 @@
+{
+  "title": "Northwind Trading Co. — visibility over time",
+  "axes": [
+    {
+      "key": "access",
+      "label": "Access"
+    },
+    {
+      "key": "crawl",
+      "label": "Crawl / Index"
+    },
+    {
+      "key": "ia",
+      "label": "IA / Links"
+    },
+    {
+      "key": "demand",
+      "label": "Demand"
+    },
+    {
+      "key": "proof",
+      "label": "Proof / EEAT"
+    },
+    {
+      "key": "authority",
+      "label": "Authority"
+    },
+    {
+      "key": "local",
+      "label": "Local"
+    },
+    {
+      "key": "aigeo",
+      "label": "AI / GEO"
+    },
+    {
+      "key": "perf",
+      "label": "Perf / UX"
+    },
+    {
+      "key": "trust",
+      "label": "Trust"
+    },
+    {
+      "key": "cro",
+      "label": "CRO"
+    },
+    {
+      "key": "attribution",
+      "label": "Attribution"
+    }
+  ],
+  "measurements": [
+    {
+      "timestamp": "2026-05-11",
+      "label": "Baseline scan",
+      "scores": {
+        "access": 55,
+        "crawl": 50,
+        "ia": 48,
+        "demand": 60,
+        "proof": 52,
+        "authority": 40,
+        "local": 58,
+        "aigeo": 35,
+        "perf": 68,
+        "trust": 70,
+        "cro": 45,
+        "attribution": 42
+      },
+      "changes": [],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-05-18",
+      "label": "Week 1",
+      "scores": {
+        "access": 60,
+        "crawl": 54,
+        "ia": 50,
+        "demand": 62,
+        "proof": 55,
+        "authority": 42,
+        "local": 60,
+        "aigeo": 38,
+        "perf": 70,
+        "trust": 72,
+        "cro": 47,
+        "attribution": 45
+      },
+      "changes": [
+        {
+          "what": "Fixed robots/sitemap and submitted in GSC",
+          "targets": [
+            "access",
+            "crawl"
+          ],
+          "source": "action-queue#11",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Granted GA4 + Search Console read access",
+          "targets": [
+            "attribution"
+          ],
+          "source": "action-queue#9",
+          "status": "confirmed",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-05-25",
+      "label": "Week 2",
+      "scores": {
+        "access": 64,
+        "crawl": 60,
+        "ia": 55,
+        "demand": 64,
+        "proof": 58,
+        "authority": 44,
+        "local": 61,
+        "aigeo": 40,
+        "perf": 72,
+        "trust": 73,
+        "cro": 50,
+        "attribution": 48
+      },
+      "changes": [
+        {
+          "what": "Internal-linking pass across 30 money pages",
+          "targets": [
+            "ia",
+            "crawl"
+          ],
+          "source": "second-pass-actions#4",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Added breadcrumb + Organization schema",
+          "targets": [
+            "proof",
+            "trust"
+          ],
+          "source": "action-queue#18",
+          "status": "suggested",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-06-01",
+      "label": "Week 3",
+      "scores": {
+        "access": 67,
+        "crawl": 66,
+        "ia": 60,
+        "demand": 66,
+        "proof": 62,
+        "authority": 48,
+        "local": 62,
+        "aigeo": 45,
+        "perf": 74,
+        "trust": 74,
+        "cro": 53,
+        "attribution": 52
+      },
+      "changes": [
+        {
+          "what": "Shipped 6 EEAT proof / case-study pages",
+          "targets": [
+            "proof",
+            "authority"
+          ],
+          "source": "causal-hypotheses#7",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Author bios + credentials on key pages",
+          "targets": [
+            "proof"
+          ],
+          "source": "action-queue#22",
+          "status": "confirmed",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-06-08",
+      "label": "Week 4",
+      "scores": {
+        "access": 69,
+        "crawl": 69,
+        "ia": 64,
+        "demand": 70,
+        "proof": 66,
+        "authority": 52,
+        "local": 63,
+        "aigeo": 52,
+        "perf": 76,
+        "trust": 75,
+        "cro": 55,
+        "attribution": 55
+      },
+      "changes": [
+        {
+          "what": "Earned 9 referring domains (PR + directories)",
+          "targets": [
+            "authority"
+          ],
+          "source": "causal-hypotheses#12",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Published llms.txt + entity catalog for AI crawlers",
+          "targets": [
+            "aigeo"
+          ],
+          "source": "action-queue#31",
+          "status": "confirmed",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "timestamp": "2026-06-15",
+      "label": "Week 5 (latest)",
+      "scores": {
+        "access": 71,
+        "crawl": 72,
+        "ia": 66,
+        "demand": 74,
+        "proof": 70,
+        "authority": 58,
+        "local": 63,
+        "aigeo": 62,
+        "perf": 78,
+        "trust": 76,
+        "cro": 58,
+        "attribution": 58
+      },
+      "changes": [
+        {
+          "what": "FAQ schema on 8 high-intent pages",
+          "targets": [
+            "aigeo",
+            "proof"
+          ],
+          "source": "action-queue#37",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "Ran buyer/bank prompts; cited in 6/55 (was 0)",
+          "targets": [
+            "aigeo"
+          ],
+          "source": "causal-hypotheses#19",
+          "status": "confirmed",
+          "expected": "+"
+        },
+        {
+          "what": "GBP posts + 3 new reviews",
+          "targets": [
+            "local"
+          ],
+          "source": "action-queue#40",
+          "status": "suggested",
+          "expected": "+"
+        }
+      ],
+      "synthetic": true,
+      "detail": {
+        "access": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "provider_control_plane_rows",
+          "dayOneTactic": "Focus on provider / control-plane rows: Improve provider / control-plane rows with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for provider / control-plane rows with retest date.",
+          "whatProves": "Public/provider evidence supports the current access reading.",
+          "whatCannotProve": "It does not prove every access submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "crawl": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "redirect_canonical_hygiene",
+          "dayOneTactic": "Focus on redirect & canonical hygiene: Improve redirect & canonical hygiene with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for redirect & canonical hygiene with retest date.",
+          "whatProves": "Public/provider evidence supports the current crawl / index reading.",
+          "whatCannotProve": "It does not prove every crawl / index submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "ia": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "hub_to_proof_linking",
+          "dayOneTactic": "Focus on hub-to-proof linking: Improve hub-to-proof linking with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for hub-to-proof linking with retest date.",
+          "whatProves": "Public/provider evidence supports the current ia / links reading.",
+          "whatCannotProve": "It does not prove every ia / links submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "demand": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "content_gap_coverage",
+          "dayOneTactic": "Focus on content gap coverage: Improve content gap coverage with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for content gap coverage with retest date.",
+          "whatProves": "Public/provider evidence supports the current demand reading.",
+          "whatCannotProve": "It does not prove every demand submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "proof": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "authorship_dates",
+          "dayOneTactic": "Focus on authorship & dates: Improve authorship & dates with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for authorship & dates with retest date.",
+          "whatProves": "Public/provider evidence supports the current proof / eeat reading.",
+          "whatCannotProve": "It does not prove every proof / eeat submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "authority": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "link_quality_spam_risk",
+          "dayOneTactic": "Focus on link quality / spam risk: Improve link quality / spam risk with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for link quality / spam risk with retest date.",
+          "whatProves": "Public/provider evidence supports the current authority reading.",
+          "whatCannotProve": "It does not prove every authority submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "local": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "review_depth_cadence",
+          "dayOneTactic": "Focus on review depth & cadence: Improve review depth & cadence with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for review depth & cadence with retest date.",
+          "whatProves": "Public/provider evidence supports the current local reading.",
+          "whatCannotProve": "It does not prove every local submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "aigeo": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "prompt_citation_baseline",
+          "dayOneTactic": "Focus on prompt citation baseline: Improve prompt citation baseline with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for prompt citation baseline with retest date.",
+          "whatProves": "Public/provider evidence supports the current ai / geo reading.",
+          "whatCannotProve": "It does not prove every ai / geo submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "perf": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "mobile_ux",
+          "dayOneTactic": "Focus on mobile ux: Improve mobile ux with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for mobile ux with retest date.",
+          "whatProves": "Public/provider evidence supports the current perf / ux reading.",
+          "whatCannotProve": "It does not prove every perf / ux submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "trust": {
+          "band": "working",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "security_headers_tls",
+          "dayOneTactic": "Focus on security headers & tls: Improve security headers & tls with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for security headers & tls with retest date.",
+          "whatProves": "Public/provider evidence supports the current trust reading.",
+          "whatCannotProve": "It does not prove every trust submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "cro": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "behavior_tracking_coverage",
+          "dayOneTactic": "Focus on behavior tracking coverage: Improve behavior tracking coverage with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for behavior tracking coverage with retest date.",
+          "whatProves": "Public/provider evidence supports the current cro reading.",
+          "whatCannotProve": "It does not prove every cro submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        },
+        "attribution": {
+          "band": "constrained",
+          "confidence": "partial_provider_verified",
+          "sourceWindow": "2026-06-09 to 2026-06-15",
+          "highestLift": "conversion_event_integrity",
+          "dayOneTactic": "Focus on conversion event integrity: Improve conversion event integrity with approval; verify with a fresh readback.",
+          "proofRequired": "Before/after readback for conversion event integrity with retest date.",
+          "whatProves": "Public/provider evidence supports the current attribution reading.",
+          "whatCannotProve": "It does not prove every attribution submetric is fully provider-verified.",
+          "notes": "Synthetic demo detail."
+        }
+      }
+    }
+  ],
+  "submetrics": {
+    "access": [
+      {
+        "key": "robots_sitemap_health",
+        "label": "Robots & sitemap health",
+        "score": 74,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "robots.txt",
+          "sitemap.xml",
+          "GSC"
+        ],
+        "sourceExamples": [
+          "robots directives",
+          "sitemap status",
+          "submission"
+        ],
+        "improvementActions": "Improve robots & sitemap health with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for robots & sitemap health with retest date.",
+        "history": [
+          57,
+          65,
+          66,
+          66,
+          74,
+          74
+        ]
+      },
+      {
+        "key": "provider_control_plane_rows",
+        "label": "Provider / control-plane rows",
+        "score": 65,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "provider readback",
+          "control plane"
+        ],
+        "sourceExamples": [
+          "tenant/slug",
+          "provider attach"
+        ],
+        "improvementActions": "Improve provider / control-plane rows with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for provider / control-plane rows with retest date.",
+        "history": [
+          48,
+          56,
+          57,
+          57,
+          65,
+          65
+        ]
+      },
+      {
+        "key": "toolbelt_connectivity",
+        "label": "Toolbelt connectivity",
+        "score": 70,
+        "weight": 30,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GA4",
+          "GSC",
+          "DataForSEO"
+        ],
+        "sourceExamples": [
+          "read access",
+          "API keys",
+          "exports"
+        ],
+        "improvementActions": "Improve toolbelt connectivity with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for toolbelt connectivity with retest date.",
+        "history": [
+          53,
+          61,
+          62,
+          62,
+          70,
+          70
+        ]
+      }
+    ],
+    "crawl": [
+      {
+        "key": "indexable_url_coverage",
+        "label": "Indexable URL coverage",
+        "score": 75,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC URL Inspection",
+          "sitemap"
+        ],
+        "sourceExamples": [
+          "indexed ratio",
+          "coverage errors"
+        ],
+        "improvementActions": "Improve indexable url coverage with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for indexable url coverage with retest date.",
+        "history": [
+          58,
+          66,
+          67,
+          67,
+          75,
+          75
+        ]
+      },
+      {
+        "key": "redirect_canonical_hygiene",
+        "label": "Redirect & canonical hygiene",
+        "score": 66,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "redirects"
+        ],
+        "sourceExamples": [
+          "301 chains",
+          "canonical tags"
+        ],
+        "improvementActions": "Improve redirect & canonical hygiene with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for redirect & canonical hygiene with retest date.",
+        "history": [
+          49,
+          57,
+          58,
+          58,
+          66,
+          66
+        ]
+      },
+      {
+        "key": "crawl_budget_signals",
+        "label": "Crawl budget signals",
+        "score": 71,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "log files",
+          "GSC"
+        ],
+        "sourceExamples": [
+          "crawl rate",
+          "wasted hits"
+        ],
+        "improvementActions": "Improve crawl budget signals with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for crawl budget signals with retest date.",
+        "history": [
+          54,
+          62,
+          63,
+          63,
+          71,
+          71
+        ]
+      }
+    ],
+    "ia": [
+      {
+        "key": "internal_link_depth",
+        "label": "Internal link depth",
+        "score": 69,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl export",
+          "link graph"
+        ],
+        "sourceExamples": [
+          "click depth",
+          "links per page"
+        ],
+        "improvementActions": "Improve internal link depth with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for internal link depth with retest date.",
+        "history": [
+          52,
+          60,
+          61,
+          61,
+          69,
+          69
+        ]
+      },
+      {
+        "key": "hub_to_proof_linking",
+        "label": "Hub-to-proof linking",
+        "score": 60,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "sitemap"
+        ],
+        "sourceExamples": [
+          "service→proof",
+          "CTA paths"
+        ],
+        "improvementActions": "Improve hub-to-proof linking with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for hub-to-proof linking with retest date.",
+        "history": [
+          43,
+          51,
+          52,
+          52,
+          60,
+          60
+        ]
+      },
+      {
+        "key": "orphans_breadcrumbs",
+        "label": "Orphans & breadcrumbs",
+        "score": 65,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "schema"
+        ],
+        "sourceExamples": [
+          "orphan pages",
+          "breadcrumb schema"
+        ],
+        "improvementActions": "Improve orphans & breadcrumbs with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for orphans & breadcrumbs with retest date.",
+        "history": [
+          48,
+          56,
+          57,
+          57,
+          65,
+          65
+        ]
+      }
+    ],
+    "demand": [
+      {
+        "key": "query_keyword_demand",
+        "label": "Query / keyword demand",
+        "score": 77,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GSC",
+          "DataForSEO"
+        ],
+        "sourceExamples": [
+          "impressions",
+          "query demand",
+          "CTR"
+        ],
+        "improvementActions": "Improve query / keyword demand with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for query / keyword demand with retest date.",
+        "history": [
+          60,
+          68,
+          69,
+          69,
+          77,
+          77
+        ]
+      },
+      {
+        "key": "content_gap_coverage",
+        "label": "Content gap coverage",
+        "score": 68,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "SERP review",
+          "keyword tool"
+        ],
+        "sourceExamples": [
+          "topic gaps",
+          "SERP features"
+        ],
+        "improvementActions": "Improve content gap coverage with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for content gap coverage with retest date.",
+        "history": [
+          51,
+          59,
+          60,
+          60,
+          68,
+          68
+        ]
+      },
+      {
+        "key": "rank_tracker_movement",
+        "label": "Rank-tracker movement",
+        "score": 73,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "DataForSEO rank tracker"
+        ],
+        "sourceExamples": [
+          "position deltas",
+          "wins/losses"
+        ],
+        "improvementActions": "Improve rank-tracker movement with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for rank-tracker movement with retest date.",
+        "history": [
+          56,
+          64,
+          65,
+          65,
+          73,
+          73
+        ]
+      }
+    ],
+    "proof": [
+      {
+        "key": "eeat_proof_assets",
+        "label": "EEAT proof assets",
+        "score": 73,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "page review",
+          "schema"
+        ],
+        "sourceExamples": [
+          "case studies",
+          "proof blocks",
+          "tables"
+        ],
+        "improvementActions": "Improve eeat proof assets with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for eeat proof assets with retest date.",
+        "history": [
+          56,
+          64,
+          65,
+          65,
+          73,
+          73
+        ]
+      },
+      {
+        "key": "authorship_dates",
+        "label": "Authorship & dates",
+        "score": 64,
+        "weight": 30,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "rendered body",
+          "schema"
+        ],
+        "sourceExamples": [
+          "author bios",
+          "datePublished"
+        ],
+        "improvementActions": "Improve authorship & dates with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for authorship & dates with retest date.",
+        "history": [
+          47,
+          55,
+          56,
+          56,
+          64,
+          64
+        ]
+      },
+      {
+        "key": "old_copy_consistency",
+        "label": "Old-copy consistency",
+        "score": 69,
+        "weight": 30,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "crawl",
+          "content QA"
+        ],
+        "sourceExamples": [
+          "outdated copy",
+          "terminology"
+        ],
+        "improvementActions": "Improve old-copy consistency with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for old-copy consistency with retest date.",
+        "history": [
+          52,
+          60,
+          61,
+          61,
+          69,
+          69
+        ]
+      }
+    ],
+    "authority": [
+      {
+        "key": "referring_domains",
+        "label": "Referring domains",
+        "score": 61,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Ahrefs"
+        ],
+        "sourceExamples": [
+          "referring domains",
+          "DR"
+        ],
+        "improvementActions": "Improve referring domains with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for referring domains with retest date.",
+        "history": [
+          44,
+          52,
+          53,
+          53,
+          61,
+          61
+        ]
+      },
+      {
+        "key": "link_quality_spam_risk",
+        "label": "Link quality / spam risk",
+        "score": 52,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Ahrefs",
+          "manual review"
+        ],
+        "sourceExamples": [
+          "toxic links",
+          "anchor mix"
+        ],
+        "improvementActions": "Improve link quality / spam risk with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for link quality / spam risk with retest date.",
+        "history": [
+          35,
+          43,
+          44,
+          44,
+          52,
+          52
+        ]
+      },
+      {
+        "key": "approved_outreach_footprint",
+        "label": "Approved outreach footprint",
+        "score": 57,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "outreach ledger"
+        ],
+        "sourceExamples": [
+          "sent/earned links"
+        ],
+        "improvementActions": "Improve approved outreach footprint with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for approved outreach footprint with retest date.",
+        "history": [
+          40,
+          48,
+          49,
+          49,
+          57,
+          57
+        ]
+      }
+    ],
+    "local": [
+      {
+        "key": "gbp_completeness",
+        "label": "GBP completeness",
+        "score": 66,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GBP",
+          "Bing Places"
+        ],
+        "sourceExamples": [
+          "website field",
+          "categories",
+          "services"
+        ],
+        "improvementActions": "Improve gbp completeness with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for gbp completeness with retest date.",
+        "history": [
+          49,
+          57,
+          58,
+          58,
+          66,
+          66
+        ]
+      },
+      {
+        "key": "review_depth_cadence",
+        "label": "Review depth & cadence",
+        "score": 57,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "reviews API",
+          "manual"
+        ],
+        "sourceExamples": [
+          "review count",
+          "response rate"
+        ],
+        "improvementActions": "Improve review depth & cadence with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for review depth & cadence with retest date.",
+        "history": [
+          40,
+          48,
+          49,
+          49,
+          57,
+          57
+        ]
+      },
+      {
+        "key": "citation_nap_consistency",
+        "label": "Citation / NAP consistency",
+        "score": 62,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "citation ledger"
+        ],
+        "sourceExamples": [
+          "NAP match",
+          "duplicates"
+        ],
+        "improvementActions": "Improve citation / nap consistency with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for citation / nap consistency with retest date.",
+        "history": [
+          45,
+          53,
+          54,
+          54,
+          62,
+          62
+        ]
+      }
+    ],
+    "aigeo": [
+      {
+        "key": "ai_crawler_access",
+        "label": "AI crawler access",
+        "score": 65,
+        "weight": 30,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "robots",
+          "AI bot matrix",
+          "llms.txt"
+        ],
+        "sourceExamples": [
+          "GPTBot",
+          "ClaudeBot",
+          "PerplexityBot"
+        ],
+        "improvementActions": "Improve ai crawler access with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for ai crawler access with retest date.",
+        "history": [
+          48,
+          56,
+          57,
+          57,
+          65,
+          65
+        ]
+      },
+      {
+        "key": "prompt_citation_baseline",
+        "label": "Prompt citation baseline",
+        "score": 56,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "promptfoo",
+          "DataForSEO LLM Mentions"
+        ],
+        "sourceExamples": [
+          "mentions",
+          "citations",
+          "answer shape"
+        ],
+        "improvementActions": "Improve prompt citation baseline with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for prompt citation baseline with retest date.",
+        "history": [
+          39,
+          47,
+          48,
+          48,
+          56,
+          56
+        ]
+      },
+      {
+        "key": "entity_schema_clarity",
+        "label": "Entity / schema clarity",
+        "score": 61,
+        "weight": 30,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "schema extraction",
+          "Knowledge Graph"
+        ],
+        "sourceExamples": [
+          "entity facts",
+          "sameAs"
+        ],
+        "improvementActions": "Improve entity / schema clarity with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for entity / schema clarity with retest date.",
+        "history": [
+          44,
+          52,
+          53,
+          53,
+          61,
+          61
+        ]
+      }
+    ],
+    "perf": [
+      {
+        "key": "core_web_vitals",
+        "label": "Core Web Vitals",
+        "score": 81,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "CrUX",
+          "Lighthouse"
+        ],
+        "sourceExamples": [
+          "LCP",
+          "CLS",
+          "INP"
+        ],
+        "improvementActions": "Improve core web vitals with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for core web vitals with retest date.",
+        "history": [
+          64,
+          72,
+          73,
+          73,
+          81,
+          81
+        ]
+      },
+      {
+        "key": "mobile_ux",
+        "label": "Mobile UX",
+        "score": 72,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Lighthouse",
+          "manual"
+        ],
+        "sourceExamples": [
+          "tap targets",
+          "viewport"
+        ],
+        "improvementActions": "Improve mobile ux with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for mobile ux with retest date.",
+        "history": [
+          55,
+          63,
+          64,
+          64,
+          72,
+          72
+        ]
+      },
+      {
+        "key": "render_js_budget",
+        "label": "Render / JS budget",
+        "score": 77,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Lighthouse",
+          "WebPageTest"
+        ],
+        "sourceExamples": [
+          "bundle size",
+          "main-thread"
+        ],
+        "improvementActions": "Improve render / js budget with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for render / js budget with retest date.",
+        "history": [
+          60,
+          68,
+          69,
+          69,
+          77,
+          77
+        ]
+      }
+    ],
+    "trust": [
+      {
+        "key": "accessibility_aa",
+        "label": "Accessibility (AA)",
+        "score": 79,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "axe",
+          "manual"
+        ],
+        "sourceExamples": [
+          "contrast",
+          "keyboard",
+          "ARIA"
+        ],
+        "improvementActions": "Improve accessibility (aa) with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for accessibility (aa) with retest date.",
+        "history": [
+          62,
+          70,
+          71,
+          71,
+          79,
+          79
+        ]
+      },
+      {
+        "key": "security_headers_tls",
+        "label": "Security headers & TLS",
+        "score": 70,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "headers",
+          "SSL"
+        ],
+        "sourceExamples": [
+          "CSP",
+          "HSTS",
+          "cert"
+        ],
+        "improvementActions": "Improve security headers & tls with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for security headers & tls with retest date.",
+        "history": [
+          53,
+          61,
+          62,
+          62,
+          70,
+          70
+        ]
+      },
+      {
+        "key": "privacy_consent",
+        "label": "Privacy & consent",
+        "score": 75,
+        "weight": 30,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "consent review"
+        ],
+        "sourceExamples": [
+          "consent banner",
+          "data handling"
+        ],
+        "improvementActions": "Improve privacy & consent with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for privacy & consent with retest date.",
+        "history": [
+          58,
+          66,
+          67,
+          67,
+          75,
+          75
+        ]
+      }
+    ],
+    "cro": [
+      {
+        "key": "cta_form_path_integrity",
+        "label": "CTA & form path integrity",
+        "score": 61,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Playwright",
+          "forms"
+        ],
+        "sourceExamples": [
+          "CTA visibility",
+          "submit path",
+          "errors"
+        ],
+        "improvementActions": "Improve cta & form path integrity with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for cta & form path integrity with retest date.",
+        "history": [
+          44,
+          52,
+          53,
+          53,
+          61,
+          61
+        ]
+      },
+      {
+        "key": "behavior_tracking_coverage",
+        "label": "Behavior tracking coverage",
+        "score": 52,
+        "weight": 30,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GA4",
+          "Clarity",
+          "PostHog"
+        ],
+        "sourceExamples": [
+          "installed",
+          "first data",
+          "consent"
+        ],
+        "improvementActions": "Improve behavior tracking coverage with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for behavior tracking coverage with retest date.",
+        "history": [
+          35,
+          43,
+          44,
+          44,
+          52,
+          52
+        ]
+      },
+      {
+        "key": "friction_rage_dead_clicks",
+        "label": "Friction (rage/dead clicks)",
+        "score": 57,
+        "weight": 30,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Clarity",
+          "PostHog"
+        ],
+        "sourceExamples": [
+          "rage clicks",
+          "dead clicks"
+        ],
+        "improvementActions": "Improve friction (rage/dead clicks) with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for friction (rage/dead clicks) with retest date.",
+        "history": [
+          40,
+          48,
+          49,
+          49,
+          57,
+          57
+        ]
+      }
+    ],
+    "attribution": [
+      {
+        "key": "source_medium_join",
+        "label": "Source / medium join",
+        "score": 61,
+        "weight": 40,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GA4",
+          "CRM"
+        ],
+        "sourceExamples": [
+          "source join",
+          "UTM hygiene"
+        ],
+        "improvementActions": "Improve source / medium join with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for source / medium join with retest date.",
+        "history": [
+          44,
+          52,
+          53,
+          53,
+          61,
+          61
+        ]
+      },
+      {
+        "key": "conversion_event_integrity",
+        "label": "Conversion event integrity",
+        "score": 52,
+        "weight": 35,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "GA4",
+          "GTM"
+        ],
+        "sourceExamples": [
+          "event firing",
+          "dedupe"
+        ],
+        "improvementActions": "Improve conversion event integrity with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for conversion event integrity with retest date.",
+        "history": [
+          35,
+          43,
+          44,
+          44,
+          52,
+          52
+        ]
+      },
+      {
+        "key": "reporting_governance",
+        "label": "Reporting governance",
+        "score": 57,
+        "weight": 25,
+        "confidence": "partial_provider_verified",
+        "evidenceSystems": [
+          "Looker",
+          "GA4"
+        ],
+        "sourceExamples": [
+          "report labels",
+          "ownership"
+        ],
+        "improvementActions": "Improve reporting governance with approval; verify with a fresh readback.",
+        "proofRequired": "Before/after readback for reporting governance with retest date.",
+        "history": [
+          40,
+          48,
+          49,
+          49,
+          57,
+          57
+        ]
+      }
+    ]
+  },
+  "client": {
+    "slug": "northwind",
+    "name": "Northwind Trading Co."
+  }
+}
