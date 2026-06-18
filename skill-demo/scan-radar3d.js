@@ -441,7 +441,7 @@
           '<span class="sr3d-rank-lab">' + esc(r.label) + "</span>" +
           '<span class="sr3d-rank-bar"><span style="width:' + r.s + "%;background:" + bandColor(r.s) + '"></span></span>' +
           '<span class="sr3d-rank-sc" style="color:' + bandColor(r.s) + '">' + r.s + "</span>" +
-          (r.conf ? '<span class="sr3d-rank-dot ' + confClass(r.conf) + '" title="' + esc(r.conf.replace(/_/g, " ")) + '"></span>' : '<span class="sr3d-rank-dot none"></span>') +
+          (r.conf ? '<span class="sr3d-rank-dot ' + confClass(r.conf) + '" role="img" aria-label="confidence: ' + esc(r.conf.replace(/_/g, " ")) + '" title="' + esc(r.conf.replace(/_/g, " ")) + '"></span>' : '<span class="sr3d-rank-dot none" role="img" aria-label="confidence: not set"></span>') +
           "</button>";
       });
       html += "</div>";
@@ -470,6 +470,25 @@
       for (i = 0; i < n; i++) { a = A(i); var s = clamp(num(list[i].score), 0, 100); rr = R * s / 100; x = cx + Math.cos(a) * rr; y = cy + Math.sin(a) * rr; var wr = 3 + 4 * (clamp(num(list[i].weight), 0, 20) / 20); svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + wr.toFixed(1) + '" fill="' + bandColor(s) + '" stroke="#fff" stroke-width="1.5"/>'; var lx = cx + Math.cos(a) * (R + 13), ly = cy + Math.sin(a) * (R + 13); svg += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" font-size="11" font-weight="800" fill="#46524b" text-anchor="middle" dominant-baseline="central">' + (i + 1) + "</text>"; }
       return '<svg class="sr3d-subradar" viewBox="0 0 340 312" role="img" aria-label="' + n + ' submetrics, radius = score, node size = weight">' + svg + "</svg>";
     }
+    function historySpark(row, selectedIndex) {
+      var vals = (row.history || []).map(function (v) { return v == null || v === "" ? null : num(v); });
+      if (vals.filter(function (v) { return v != null; }).length < 2) return "";
+      var w = 112, h = 30, pad = 3, max = 100, min = 0;
+      function X(i) { return pad + (w - pad * 2) * (i / Math.max(1, vals.length - 1)); }
+      function Y(v) { return h - pad - (h - pad * 2) * ((clamp(v, min, max) - min) / (max - min)); }
+      var open = false;
+      var d = vals.map(function (v, i) {
+        if (v == null) { open = false; return ""; }
+        var cmd = open ? "L" : "M"; open = true;
+        return cmd + X(i).toFixed(1) + " " + Y(v).toFixed(1);
+      }).filter(Boolean).join(" ");
+      var circles = vals.map(function (v, i) {
+        if (v == null) return "";
+        var active = i === selectedIndex;
+        return '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(v).toFixed(1) + '" r="' + (active ? "2.8" : "1.8") + '" fill="' + (active ? bandColor(v) : "#7f8b85") + '" stroke="#fff" stroke-width="' + (active ? "1.2" : "0") + '"/>';
+      }).join("");
+      return '<div class="sr3d-li-history"><span>History</span><svg viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="' + esc(row.label) + " history: " + esc(vals.map(function (v) { return v == null ? "missing" : v; }).join(", ")) + '"><path d="' + d + '" fill="none" stroke="#275f55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' + circles + "</svg></div>";
+    }
     function openDrill(i) {
       var key = axes[i].key, list = (subm[key] || []).slice();
       if (!list.length) return;
@@ -497,6 +516,7 @@
         return '<li><span class="sr3d-li-n" style="background:' + bandColor(ss) + '">' + (idx + 1) + "</span>" +
           '<div class="sr3d-li-main"><div class="sr3d-li-top"><b>' + esc(x.label) + '</b><span class="sr3d-li-score" style="color:' + bandColor(ss) + '">' + ss + "</span></div>" +
           '<div class="sr3d-li-bar"><span style="width:' + ss + "%;background:" + bandColor(ss) + '"></span></div>' +
+          historySpark(x, t) +
           ((x.sourceExamples || []).length ? '<div class="sr3d-li-src">' + esc(x.sourceExamples.join(" · ")) + "</div>" : "") +
           '</div><span class="sr3d-li-w" title="weight in the axis score">' + esc(x.weight) + "%</span></li>";
       }).join("") + "</ol>";
@@ -509,6 +529,15 @@
     function closeDrill() { if (drill.hidden) return; drill.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
     drill.addEventListener("click", function (e) { if (e.target === drill || e.target.closest(".sr3d-drill-x")) closeDrill(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !drill.hidden) closeDrill(); });
+    drill.addEventListener("keydown", function (e) {   // focus trap: Tab cycles within the dialog
+      if (e.key !== "Tab") return;
+      var card = drill.querySelector(".sr3d-drill-card"); if (!card) return;
+      var f = [].slice.call(card.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])')).filter(function (el) { return !el.disabled && el.offsetParent !== null; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
     function hitVertexFlat(e) {
       var pt = canvasPoint(e), R = radius() * 1.15, cx = W / 2, cy = H / 2, t = st.selected;
       for (var i = 0; i < N; i++) {

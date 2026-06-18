@@ -441,7 +441,7 @@
           '<span class="sr3d-rank-lab">' + esc(r.label) + "</span>" +
           '<span class="sr3d-rank-bar"><span style="width:' + r.s + "%;background:" + bandColor(r.s) + '"></span></span>' +
           '<span class="sr3d-rank-sc" style="color:' + bandColor(r.s) + '">' + r.s + "</span>" +
-          (r.conf ? '<span class="sr3d-rank-dot ' + confClass(r.conf) + '" title="' + esc(r.conf.replace(/_/g, " ")) + '"></span>' : '<span class="sr3d-rank-dot none"></span>') +
+          (r.conf ? '<span class="sr3d-rank-dot ' + confClass(r.conf) + '" role="img" aria-label="confidence: ' + esc(r.conf.replace(/_/g, " ")) + '" title="' + esc(r.conf.replace(/_/g, " ")) + '"></span>' : '<span class="sr3d-rank-dot none" role="img" aria-label="confidence: not set"></span>') +
           "</button>";
       });
       html += "</div>";
@@ -529,6 +529,15 @@
     function closeDrill() { if (drill.hidden) return; drill.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
     drill.addEventListener("click", function (e) { if (e.target === drill || e.target.closest(".sr3d-drill-x")) closeDrill(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !drill.hidden) closeDrill(); });
+    drill.addEventListener("keydown", function (e) {   // focus trap: Tab cycles within the dialog
+      if (e.key !== "Tab") return;
+      var card = drill.querySelector(".sr3d-drill-card"); if (!card) return;
+      var f = [].slice.call(card.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])')).filter(function (el) { return !el.disabled && el.offsetParent !== null; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
     function hitVertexFlat(e) {
       var pt = canvasPoint(e), R = radius() * 1.15, cx = W / 2, cy = H / 2, t = st.selected;
       for (var i = 0; i < N; i++) {
