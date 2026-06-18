@@ -17,6 +17,7 @@
   "use strict";
 
   var TAU = Math.PI * 2;
+  var SEQ = 0;                          // per-instance id seed (for aria wiring)
   var BANDS = { good: 75, watch: 60 }; // >=75 good, >=60 watch, else risk
   var COLORS = {
     ink: "#17211b", muted: "#64706a", line: "#d7dfd8",
@@ -74,6 +75,7 @@
 
   function create(root, opts) {
     opts = opts || {};
+    var uid = ++SEQ;
     var timeline = opts.timeline || { axes: [], measurements: [] };
     var axes = clusterOrder(timeline.axes || [], timeline.clusters || DEFAULT_CLUSTERS);
     var spans = clusterSpans(axes);
@@ -90,7 +92,8 @@
       autospin: false, spinSpeed: 0,
       drag: null, moved: 0,
       vel: { yaw: 0, pitch: 0 },   // angular velocity for release inertia
-      anim: null                    // active eased camera tween
+      anim: null,                   // active eased camera tween
+      kbAxis: 0, focused: false     // keyboard: focused-axis cursor (flat) + canvas-focus flag
     };
 
     // ---- DOM ----
@@ -110,6 +113,10 @@
     var stage = el("div", "sr3d-stage");
     var canvasWrap = el("div", "sr3d-canvas-wrap");
     var canvas = el("canvas", "sr3d-canvas");
+    canvas.tabIndex = 0;                                   // keyboard-focusable
+    canvas.setAttribute("role", "application");            // arrow keys pass through to our handler
+    canvas.setAttribute("aria-roledescription", "interactive radar");
+    canvas.setAttribute("aria-describedby", "sr3d-help-" + uid);
     canvasWrap.appendChild(canvas);
     var side = el("aside", "sr3d-side");
     stage.appendChild(canvasWrap); stage.appendChild(side);
@@ -121,7 +128,14 @@
     var subm = timeline.submetrics || {};
     var lastFocus = null;
 
+    // ---- screen-reader layer for the canvas (the one canvas-only surface; the rank
+    // rail + chips are already DOM-accessible, this gives the chart itself parity) ----
+    var srLive = el("div", "sr3d-sr"); srLive.setAttribute("role", "status"); srLive.setAttribute("aria-live", "polite");
+    var srHelp = el("p", "sr3d-sr"); srHelp.id = "sr3d-help-" + uid;
+    srHelp.textContent = "Interactive radar. In the 3D view, arrow keys orbit and plus or minus zoom. In the flat view, left and right arrows move between the axes and Enter opens an axis's detail. Page Up and Page Down change the scan; Escape returns to the 3D view. The ranked list below the chart opens the same axis details.";
+
     root.appendChild(bar); root.appendChild(stage); root.appendChild(rank); root.appendChild(chips); root.appendChild(drill);
+    root.appendChild(srLive); root.appendChild(srHelp);
 
     if (M < 2) { btn3d.disabled = true; spin.disabled = true; st.mode = "flat"; hint.textContent = "single measurement — 3D appears once there are 2+"; }
     if (reduceMotion) spin.disabled = true;
@@ -184,7 +198,7 @@
       btnFlat.classList.toggle("active", st.mode === "flat");
       spin.classList.toggle("active", st.autospin);
     }
-    function renderPanel() { renderSide(); renderChips(); renderRank(); }
+    function renderPanel() { renderSide(); renderChips(); renderRank(); updateCanvasAria(); }
     function render() { renderCanvas(); renderPanel(); }
 
     function emptyMsg(msg) {
@@ -336,6 +350,18 @@
       ctx.fillText(measurements[t].timestamp, cx, cy - 6);
       ctx.fillStyle = COLORS.muted; ctx.font = "11px system-ui, sans-serif";
       ctx.fillText("avg " + avg, cx, cy + 10);
+      // keyboard focus cursor: ring the focused axis + emphasize its label
+      if (st.focused) {
+        var fa = -Math.PI / 2 + TAU * st.kbAxis / N;
+        var fsc = clamp(num(measurements[t].scores[axes[st.kbAxis].key]), 0, 100), fr = R * fsc / 100;
+        var fx = cx + Math.cos(fa) * fr, fy = cy + Math.sin(fa) * fr;
+        ctx.beginPath(); ctx.arc(fx, fy, 11, 0, TAU); ctx.strokeStyle = COLORS.teal; ctx.lineWidth = 2.5;
+        ctx.setLineDash([4, 3]); ctx.stroke(); ctx.setLineDash([]);
+        var flx = cx + Math.cos(fa) * (R + 16), fly = cy + Math.sin(fa) * (R + 16);
+        ctx.font = "800 12px Inter, system-ui, sans-serif"; ctx.fillStyle = COLORS.teal; ctx.textBaseline = "middle";
+        ctx.textAlign = Math.cos(fa) > 0.2 ? "left" : Math.cos(fa) < -0.2 ? "right" : "center";
+        ctx.fillText(axes[st.kbAxis].label, flx, fly);
+      }
     }
 
     function avgScore(t) {
@@ -456,7 +482,8 @@
     // Detail-on-demand over the overview: a focused sub-radar of the axis's submetrics
     // (radius = score, node size proportional to weight), "where this comes from"
     // (evidence systems), highest-lift submetric, day-one action, and confidence caveat.
-    function subRadarSVG(list) {
+    function subRadarSVG(list, hi) {
+      if (hi == null) hi = -1;   // index of the submetric to spotlight (the open trend), or -1
       var cx = 170, cy = 158, R = 116, n = list.length;
       function A(i) { return -Math.PI / 2 + TAU * i / n; }
       var svg = "", i, a, rr, x, y;
@@ -467,7 +494,14 @@
       for (i = 0; i < n; i++) { a = A(i); svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + Math.cos(a) * R).toFixed(1) + '" y2="' + (cy + Math.sin(a) * R).toFixed(1) + '" stroke="#e6ece6" stroke-width="1"/>'; }
       var poly = ""; for (i = 0; i < n; i++) { a = A(i); rr = R * clamp(num(list[i].score), 0, 100) / 100; poly += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1) + " "; }
       svg += '<path d="' + poly + 'Z" fill="rgba(39,95,85,.14)" stroke="#275f55" stroke-width="2" stroke-linejoin="round"/>';
-      for (i = 0; i < n; i++) { a = A(i); var s = clamp(num(list[i].score), 0, 100); rr = R * s / 100; x = cx + Math.cos(a) * rr; y = cy + Math.sin(a) * rr; var wr = 3 + 4 * (clamp(num(list[i].weight), 0, 20) / 20); svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + wr.toFixed(1) + '" fill="' + bandColor(s) + '" stroke="#fff" stroke-width="1.5"/>'; var lx = cx + Math.cos(a) * (R + 13), ly = cy + Math.sin(a) * (R + 13); svg += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" font-size="11" font-weight="800" fill="#46524b" text-anchor="middle" dominant-baseline="central">' + (i + 1) + "</text>"; }
+      for (i = 0; i < n; i++) {
+        a = A(i); var s = clamp(num(list[i].score), 0, 100); rr = R * s / 100; x = cx + Math.cos(a) * rr; y = cy + Math.sin(a) * rr;
+        var wr = 3 + 4 * (clamp(num(list[i].weight), 0, 20) / 20), on = i === hi;
+        if (on) svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (wr + 4).toFixed(1) + '" fill="none" stroke="' + bandColor(s) + '" stroke-width="2"/>';
+        svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (on ? wr + 1.5 : wr).toFixed(1) + '" fill="' + bandColor(s) + '" stroke="#fff" stroke-width="1.5"/>';
+        var lx = cx + Math.cos(a) * (R + 13), ly = cy + Math.sin(a) * (R + 13);
+        svg += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" font-size="11" font-weight="' + (on ? 900 : 800) + '" fill="' + (on ? bandColor(s) : "#46524b") + '" text-anchor="middle" dominant-baseline="central">' + (i + 1) + "</text>";
+      }
       return '<svg class="sr3d-subradar" viewBox="0 0 340 312" role="img" aria-label="' + n + ' submetrics, radius = score, node size = weight">' + svg + "</svg>";
     }
     function historySpark(row, selectedIndex) {
@@ -489,6 +523,53 @@
       }).join("");
       return '<div class="sr3d-li-history"><span>History</span><svg viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="' + esc(row.label) + " history: " + esc(vals.map(function (v) { return v == null ? "missing" : v; }).join(", ")) + '"><path d="' + d + '" fill="none" stroke="#275f55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' + circles + "</svg></div>";
     }
+
+    // ---- "mountain range" time-series: an axis (or submetric) score across every scan.
+    // The row sparkline (historySpark) is the at-a-glance read; clicking a row expands
+    // its full trend here — overview (sub-spider) → zoom/filter (rows) → details (range). ----
+    function mountainSVG(values, labels, selIdx, color) {
+      var W = 520, H = 134, pL = 10, pR = 10, pT = 12, pB = 22, n = values.length, plotH = H - pT - pB;
+      function X(k) { return n <= 1 ? W / 2 : pL + (W - pL - pR) * (k / (n - 1)); }
+      function Y(v) { return pT + plotH * (1 - clamp(num(v), 0, 100) / 100); }
+      var pts = values.map(function (v, k) { return [X(k), Y(v)]; });
+      var g = '<svg class="sr3d-mtn" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="score over ' + n + ' scans">';
+      [25, 50, 75].forEach(function (lv) { var y = Y(lv); g += '<line x1="' + pL + '" y1="' + y.toFixed(1) + '" x2="' + (W - pR) + '" y2="' + y.toFixed(1) + '" stroke="#eef2ee" stroke-width="1"/>'; });
+      if (n > 1) {
+        var base = H - pB;
+        g += '<path d="M' + pts[0][0].toFixed(1) + " " + base + " L" + pts.map(function (p) { return p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" L") + " L" + pts[n - 1][0].toFixed(1) + " " + base + ' Z" fill="' + color + '" fill-opacity="0.13"/>';
+        g += '<path d="' + pts.map(function (p, k) { return (k ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" ") + '" fill="none" stroke="' + color + '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
+      }
+      pts.forEach(function (p, k) { var sel = k === selIdx; g += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (sel ? 4.5 : 2.6) + '" fill="' + (sel ? color : "#fff") + '" stroke="' + color + '" stroke-width="' + (sel ? 2 : 1.6) + '"/>'; });
+      var show = []; [0, n - 1, (selIdx >= 0 && selIdx < n) ? selIdx : n - 1].forEach(function (k) { if (show.indexOf(k) < 0) show.push(k); });
+      g += '<g font-size="9" fill="#7a847d">';
+      show.forEach(function (k) { if (k < 0 || k >= n) return; var anchor = k === 0 ? "start" : k === n - 1 ? "end" : "middle"; g += '<text x="' + X(k).toFixed(1) + '" y="' + (H - 7) + '" text-anchor="' + anchor + '">' + esc(labels[k] || "") + "</text>"; });
+      return g + "</g></svg>";
+    }
+    function explainerText(values, labels) {
+      var n = values.length;
+      if (n <= 1) return "Single scan so far — the trend fills in as runs accumulate.";
+      var first = clamp(num(values[0]), 0, 100), last = clamp(num(values[n - 1]), 0, 100), d = last - first;
+      var bi = 1, bd = 0; for (var k = 1; k < n; k++) { var step = clamp(num(values[k]), 0, 100) - clamp(num(values[k - 1]), 0, 100); if (Math.abs(step) > Math.abs(bd)) { bd = step; bi = k; } }
+      return '<b style="color:' + bandColor(last) + '">' + last + '</b> now · <b class="' + (d > 0 ? "up" : d < 0 ? "down" : "") + '">' + (d > 0 ? "+" + d : d) + "</b> since " + esc(labels[0] || "start") +
+        (bd ? ' · biggest move <b class="' + (bd > 0 ? "up" : "down") + '">' + (bd > 0 ? "+" + bd : bd) + "</b> (" + esc(labels[bi - 1] || "") + "→" + esc(labels[bi] || "") + ")" : "");
+    }
+
+    var drillState = null;   // { i, list, sub }  — sub = submetric index, or -1 (whole axis)
+    function renderDrillTime() {
+      if (!drillState) return;
+      var i = drillState.i, list = drillState.list, sub = drillState.sub, labels = measurements.map(function (mm) { return mm.timestamp; });
+      var values, color, name;
+      if (sub >= 0) { var sm = list[sub]; values = (sm.history && sm.history.length) ? sm.history : [clamp(num(sm.score), 0, 100)]; color = bandColor(clamp(num(sm.score), 0, 100)); name = sm.label; }
+      else { var key = axes[i].key; values = measurements.map(function (mm) { return clamp(num(mm.scores[key]), 0, 100); }); color = bandColor(clamp(num(measurements[st.selected].scores[key]), 0, 100)); name = "Whole axis"; }
+      var useLabels = values.length === labels.length ? labels : labels.slice(-values.length);
+      var tEl = drill.querySelector(".sr3d-drill-time");
+      if (tEl) tEl.innerHTML = '<div class="sr3d-drill-lbl">Over time · ' + esc(name) + (sub >= 0 ? ' <button class="sr3d-time-back" type="button">← whole axis</button>' : "") + "</div>" +
+        mountainSVG(values, useLabels, st.selected, color) + '<div class="sr3d-time-exp">' + explainerText(values, useLabels) + "</div>";
+      var lEl = drill.querySelector(".sr3d-drill-left"); if (lEl) lEl.innerHTML = subRadarSVG(list, sub);
+      var rows = drill.querySelectorAll(".sr3d-li"); for (var r = 0; r < rows.length; r++) rows[r].classList.toggle("active", r === sub);
+    }
+    function showSeries(sub) { if (drillState) { drillState.sub = sub; renderDrillTime(); } }
+
     function openDrill(i) {
       var key = axes[i].key, list = (subm[key] || []).slice();
       if (!list.length) return;
@@ -506,28 +587,36 @@
         '<span class="sr3d-pill ' + bandKey(s) + '">' + bandLabel(s) + "</span>" +
         (det.confidence ? '<span class="sr3d-conf">' + esc(det.confidence.replace(/_/g, " ")) + "</span>" : "") +
         "</div>" +
-        '<div class="sr3d-drill-body"><div class="sr3d-drill-left">' + subRadarSVG(list) + '</div><div class="sr3d-drill-right">';
-      if (hl) h += '<div class="sr3d-drill-hl"><span class="sr3d-hl-tag">Highest lift</span><b>' + esc(hlLabel) + "</b></div>";
-      if (det.dayOneTactic) h += '<div class="sr3d-drill-act"><div class="sr3d-drill-lbl">Day-one action</div><p>' + esc(det.dayOneTactic) + "</p></div>";
-      if (sysArr.length) h += '<div class="sr3d-drill-prov"><div class="sr3d-drill-lbl">Where this comes from</div><div class="sr3d-prov-chips">' + sysArr.slice(0, 14).map(function (v) { return "<span>" + esc(v) + "</span>"; }).join("") + "</div></div>";
-      h += "</div></div>";
-      h += '<ol class="sr3d-drill-list">' + list.map(function (x, idx) {
+        // sub-spider (left) next to the time-series mountain range (right, filled by renderDrillTime)
+        '<div class="sr3d-drill-body"><div class="sr3d-drill-left">' + subRadarSVG(list, -1) + '</div><div class="sr3d-drill-right sr3d-drill-time"></div></div>';
+      var info = "";
+      if (hl) info += '<div class="sr3d-drill-hl"><span class="sr3d-hl-tag">Highest lift</span><b>' + esc(hlLabel) + "</b></div>";
+      if (det.dayOneTactic) info += '<div class="sr3d-drill-act"><div class="sr3d-drill-lbl">Day-one action</div><p>' + esc(det.dayOneTactic) + "</p></div>";
+      if (sysArr.length) info += '<div class="sr3d-drill-prov"><div class="sr3d-drill-lbl">Where this comes from</div><div class="sr3d-prov-chips">' + sysArr.slice(0, 14).map(function (v) { return "<span>" + esc(v) + "</span>"; }).join("") + "</div></div>";
+      if (info) h += '<div class="sr3d-drill-info">' + info + "</div>";
+      h += '<div class="sr3d-drill-lbl sr3d-list-lbl">Submetrics — click one for its own trend</div><div class="sr3d-drill-list">' + list.map(function (x, idx) {
         var ss = clamp(num(x.score), 0, 100);
-        return '<li><span class="sr3d-li-n" style="background:' + bandColor(ss) + '">' + (idx + 1) + "</span>" +
+        return '<button class="sr3d-li" type="button" data-sub="' + idx + '"><span class="sr3d-li-n" style="background:' + bandColor(ss) + '">' + (idx + 1) + "</span>" +
           '<div class="sr3d-li-main"><div class="sr3d-li-top"><b>' + esc(x.label) + '</b><span class="sr3d-li-score" style="color:' + bandColor(ss) + '">' + ss + "</span></div>" +
           '<div class="sr3d-li-bar"><span style="width:' + ss + "%;background:" + bandColor(ss) + '"></span></div>' +
           historySpark(x, t) +
           ((x.sourceExamples || []).length ? '<div class="sr3d-li-src">' + esc(x.sourceExamples.join(" · ")) + "</div>" : "") +
-          '</div><span class="sr3d-li-w" title="weight in the axis score">' + esc(x.weight) + "%</span></li>";
-      }).join("") + "</ol>";
+          '</div><span class="sr3d-li-w" title="weight in the axis score">' + esc(x.weight) + "%</span></button>";
+      }).join("") + "</div>";
       if (det.whatCannotProve) h += '<div class="sr3d-drill-caveat"><b>Can\'t yet prove —</b> ' + esc(det.whatCannotProve) + "</div>";
       h += "</div>";
       drill.innerHTML = h;
+      drillState = { i: i, list: list, sub: -1 };   // start on the whole-axis trend
+      renderDrillTime();
       drill.hidden = false;
       var xb = drill.querySelector(".sr3d-drill-x"); if (xb) xb.focus();
     }
-    function closeDrill() { if (drill.hidden) return; drill.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
-    drill.addEventListener("click", function (e) { if (e.target === drill || e.target.closest(".sr3d-drill-x")) closeDrill(); });
+    function closeDrill() { if (drill.hidden) return; drill.hidden = true; drillState = null; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+    drill.addEventListener("click", function (e) {
+      if (e.target === drill || e.target.closest(".sr3d-drill-x")) { closeDrill(); return; }
+      if (e.target.closest(".sr3d-time-back")) { showSeries(-1); return; }       // back to whole-axis trend
+      var row = e.target.closest(".sr3d-li"); if (row) { showSeries(+row.dataset.sub); }   // glance → expand this submetric
+    });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !drill.hidden) closeDrill(); });
     drill.addEventListener("keydown", function (e) {   // focus trap: Tab cycles within the dialog
       if (e.key !== "Tab") return;
@@ -609,6 +698,55 @@
       st.zoom = clamp(st.zoom * (e.deltaY < 0 ? 1.08 : 0.92), 0.4, 3);
       render();
     }, { passive: false });
+
+    // ---- keyboard + screen-reader control of the canvas ----
+    // Clearing then re-setting (next tick) reliably re-announces even identical text.
+    function announce(msg) { srLive.textContent = ""; global.setTimeout(function () { srLive.textContent = msg; }, 30); }
+    function updateCanvasAria() {
+      if (!N || !M) { canvas.setAttribute("aria-label", "Visibility radar — no data"); return; }
+      var m = measurements[st.selected] || {};
+      canvas.setAttribute("aria-label", st.mode === "flat"
+        ? "Visibility radar, flat view, " + (m.timestamp || "") + ", average " + avgScore(st.selected) + " of 100"
+        : "Visibility radar, 3D time series, " + M + " scans, current scan " + (m.timestamp || ""));
+    }
+    function announceAxis() {
+      var a = axes[st.kbAxis], s = clamp(num(measurements[st.selected].scores[a.key]), 0, 100);
+      announce(a.label + ", " + s + ", " + bandLabel(s) + ((subm[a.key] || []).length ? " — press Enter to open detail" : ""));
+    }
+    function announceScan() { announce(measurements[st.selected].timestamp + ", average " + avgScore(st.selected)); }
+    function orbitBy(dyaw, dpitch) { st.anim = null; st.vel.yaw = 0; st.vel.pitch = 0; st.yaw += dyaw; st.pitch = clamp(st.pitch + dpitch, -1.45, 1.45); renderCanvas(); }
+    function zoomBy(f) { st.zoom = clamp(st.zoom * f, 0.4, 3); renderCanvas(); }
+
+    canvas.addEventListener("focus", function () {
+      st.focused = true; renderCanvas();
+      announce(st.mode === "flat"
+        ? "Flat radar, " + measurements[st.selected].timestamp + ". Left and right arrows move between axes; Enter opens detail."
+        : "3D time-series radar, " + M + " scans. Arrow keys orbit; Enter opens the current scan.");
+    });
+    canvas.addEventListener("blur", function () { st.focused = false; renderCanvas(); });
+    canvas.addEventListener("keydown", function (e) {
+      if (!N || !M) return;
+      var k = e.key;
+      if (st.mode === "flat") {
+        if (k === "ArrowRight" || k === "ArrowLeft") { e.preventDefault(); st.kbAxis = (st.kbAxis + (k === "ArrowRight" ? 1 : N - 1)) % N; renderCanvas(); announceAxis(); }
+        else if (k === "ArrowUp" || k === "ArrowDown") { if (M < 2) return; e.preventDefault(); selectIndex(st.selected + (k === "ArrowUp" ? 1 : -1)); announceScan(); }
+        else if (k === "Home") { e.preventDefault(); st.kbAxis = 0; renderCanvas(); announceAxis(); }
+        else if (k === "End") { e.preventDefault(); st.kbAxis = N - 1; renderCanvas(); announceAxis(); }
+        else if (k === "Enter" || k === " " || k === "Spacebar") { if ((subm[axes[st.kbAxis].key] || []).length) { e.preventDefault(); openDrill(st.kbAxis); } }
+        else if (k === "Escape") { if (M > 1) { e.preventDefault(); setMode("3d"); announce("3D time series, " + M + " scans"); } }
+      } else {
+        if (k === "ArrowLeft") { e.preventDefault(); orbitBy(-0.2, 0); }
+        else if (k === "ArrowRight") { e.preventDefault(); orbitBy(0.2, 0); }
+        else if (k === "ArrowUp") { e.preventDefault(); orbitBy(0, -0.16); }
+        else if (k === "ArrowDown") { e.preventDefault(); orbitBy(0, 0.16); }
+        else if (k === "+" || k === "=") { e.preventDefault(); zoomBy(1.1); }
+        else if (k === "-" || k === "_") { e.preventDefault(); zoomBy(1 / 1.1); }
+        else if (k === "PageUp" || k === "PageDown") { e.preventDefault(); selectIndex(st.selected + (k === "PageUp" ? 1 : -1)); announceScan(); }
+        else if (k === "Home") { e.preventDefault(); selectIndex(M - 1); announceScan(); }
+        else if (k === "End") { e.preventDefault(); selectIndex(0); announceScan(); }
+        else if (k === "Enter" || k === " " || k === "Spacebar") { e.preventDefault(); setMode("flat"); announce("Flat view, " + measurements[st.selected].timestamp); }
+      }
+    });
 
     function canvasPoint(e) {
       var r = canvas.getBoundingClientRect();

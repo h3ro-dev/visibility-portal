@@ -62,6 +62,11 @@
 
 .sr3d-canvas { cursor: grab; display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
 .sr3d-canvas:active { cursor: grabbing; }
+.sr3d-canvas:focus { outline: none; }
+.sr3d-canvas:focus-visible { border-radius: 10px; outline: 2.5px solid var(--sr-teal); outline-offset: -3px; }
+
+/* visually-hidden SR helpers (canvas live region + keyboard instructions) */
+.sr3d-sr { border: 0; clip: rect(0 0 0 0); clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; white-space: nowrap; width: 1px; }
 
 .sr3d-side {
   align-content: start;
@@ -263,8 +268,22 @@
 .sr3d-drill-act p { font-size: 13px; line-height: 1.5; margin: 0; }
 .sr3d-prov-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .sr3d-prov-chips span { background: #f1f5f1; border: 1px solid #e2e8e2; border-radius: 7px; color: #3c4a43; font-family: ui-monospace, Menlo, monospace; font-size: 11px; padding: 3px 8px; }
-.sr3d-drill-list { border-top: 1px solid var(--sr-line); display: grid; gap: 9px; list-style: none; margin: 18px 0 0; padding: 16px 0 0; }
-.sr3d-drill-list li { align-items: center; display: grid; gap: 11px; grid-template-columns: 24px minmax(0, 1fr) auto; }
+/* info block (highest-lift / day-one / provenance) sits below the body, like the portal */
+.sr3d-drill-info { border-top: 1px solid var(--sr-line); display: grid; gap: 12px; margin-top: 16px; padding-top: 14px; }
+/* "mountain range" time-series panel (right column) + its one-line explainer */
+.sr3d-mtn { display: block; height: auto; width: 100%; }
+.sr3d-time-exp { color: var(--sr-muted); font-size: 12px; margin-top: 6px; }
+.sr3d-time-exp b { font-family: ui-monospace, Menlo, monospace; font-weight: 800; }
+.sr3d-time-exp b.up { color: var(--sr-good); } .sr3d-time-exp b.down { color: #9b2424; }
+.sr3d-time-back { background: #f1f5f1; border: 1px solid var(--sr-line); border-radius: 7px; color: var(--sr-teal); cursor: pointer; font-size: 10px; font-weight: 800; margin-left: 6px; padding: 1px 7px; }
+/* submetric rows are now buttons: glance (inline sparkline) + click to expand the trend */
+.sr3d-list-lbl { border-top: 1px solid var(--sr-line); margin: 18px 0 8px; padding-top: 14px; }
+.sr3d-drill-list { display: grid; gap: 7px; }
+.sr3d-li { align-items: center; background: #fff; border: 1px solid var(--sr-line); border-radius: 9px; cursor: pointer; display: grid; font: inherit; gap: 11px; grid-template-columns: 24px minmax(0, 1fr) auto; padding: 7px 9px; text-align: left; width: 100%;
+  transition: background-color 130ms ease, border-color 130ms ease, transform 110ms var(--sr-ease-out); }
+.sr3d-li:active { transform: scale(0.995); }
+@media (hover: hover) and (pointer: fine) { .sr3d-li:hover { background: #f6fbf8; border-color: #b8c7bc; } }
+.sr3d-li.active { background: #f1f7f3; border-color: var(--sr-teal); box-shadow: inset 2px 0 0 var(--sr-teal); }
 .sr3d-li-n { align-items: center; border-radius: 7px; color: #fff; display: flex; font-size: 11px; font-weight: 900; height: 24px; justify-content: center; width: 24px; }
 .sr3d-li-main { min-width: 0; }
 .sr3d-li-top { align-items: baseline; display: flex; gap: 8px; justify-content: space-between; }
@@ -282,7 +301,7 @@
 @media (max-width: 620px) { .sr3d-drill-body { grid-template-columns: 1fr; } .sr3d-subradar { margin: 0 auto; max-width: 320px; } }
 @media (prefers-reduced-motion: reduce) {
   .sr3d-drill, .sr3d-drill-card { animation: none; }
-  .sr3d-rank-bar span, .sr3d-cluster-bar span, .sr3d-li-bar span { transition: none; }
-  .sr3d-rank-row { transition: none; }
-  .sr3d-rank-row.drillable:active { transform: none; }
+  .sr3d-rank-bar span, .sr3d-cluster-bar span, .sr3d-li-bar span, .sr3d-mtn { transition: none; }
+  .sr3d-rank-row, .sr3d-li { transition: none; }
+  .sr3d-rank-row.drillable:active, .sr3d-li:active { transform: none; }
 }

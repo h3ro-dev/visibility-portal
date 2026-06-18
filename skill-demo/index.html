@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>timeseries-radar-3d skill — demo preview</title>
-  <link rel="stylesheet" href="scan-radar3d.css?v=6">
+  <link rel="stylesheet" href="scan-radar3d.css?v=7">
   <link rel="stylesheet" href="/visibility-portal/assets/site-nav.css?v=2">
   <style>
     body { background: #f6f8f6; color: #17211b; font-family: Inter, ui-sans-serif, system-ui, sans-serif; margin: 0; }
@@ -19,11 +19,11 @@
 <body>
   <div class="wrap">
     <h1>timeseries-radar-3d <span class="tag">skill demo preview</span></h1>
-    <p class="lede">Dependency-free canvas build of the <code>timeseries-radar-3d</code> skill (no Three.js). Drag to orbit, scroll to zoom, click a slice for its flat view, and <b>click an axis (or a row in "Where you stand") to drill into its submetrics and sources</b>. Synthetic sample data. This page is a temporary public preview of the skill's own demo.</p>
+    <p class="lede">Dependency-free canvas build of the <code>timeseries-radar-3d</code> skill (no Three.js). Drag to orbit, scroll to zoom, click a slice for its flat view, and <b>click an axis (or a row in "Where you stand") to drill into its submetrics, sources, and score trend</b> — then click any submetric for its own mountain-range history. Fully keyboard-operable (focus the chart, then arrow keys). Synthetic sample data. This page is a temporary public preview of the skill's own demo.</p>
     <div class="panel"><div id="radar"></div></div>
     <p class="note">Drop-in: <code>ScanRadar3D.mount(el, { dataUrl: "timeline.json" })</code>.</p>
   </div>
-  <script src="scan-radar3d.js?v=6"></script>
+  <script src="scan-radar3d.js?v=7"></script>
   <script>
     ScanRadar3D.mount(document.getElementById("radar"), { dataUrl: "timeline.sample.json" });
   </script>

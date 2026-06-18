@@ -434,7 +434,15 @@
           "submission"
         ],
         "improvementActions": "Improve robots & sitemap health with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for robots & sitemap health with retest date."
+        "proofRequired": "Before/after readback for robots & sitemap health with retest date.",
+        "history": [
+          57,
+          65,
+          66,
+          66,
+          74,
+          74
+        ]
       },
       {
         "key": "provider_control_plane_rows",
@@ -451,7 +459,15 @@
           "provider attach"
         ],
         "improvementActions": "Improve provider / control-plane rows with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for provider / control-plane rows with retest date."
+        "proofRequired": "Before/after readback for provider / control-plane rows with retest date.",
+        "history": [
+          48,
+          56,
+          57,
+          57,
+          65,
+          65
+        ]
       },
       {
         "key": "toolbelt_connectivity",
@@ -470,7 +486,15 @@
           "exports"
         ],
         "improvementActions": "Improve toolbelt connectivity with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for toolbelt connectivity with retest date."
+        "proofRequired": "Before/after readback for toolbelt connectivity with retest date.",
+        "history": [
+          53,
+          61,
+          62,
+          62,
+          70,
+          70
+        ]
       }
     ],
     "crawl": [
@@ -489,7 +513,15 @@
           "coverage errors"
         ],
         "improvementActions": "Improve indexable url coverage with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for indexable url coverage with retest date."
+        "proofRequired": "Before/after readback for indexable url coverage with retest date.",
+        "history": [
+          58,
+          66,
+          67,
+          67,
+          75,
+          75
+        ]
       },
       {
         "key": "redirect_canonical_hygiene",
@@ -506,7 +538,15 @@
           "canonical tags"
         ],
         "improvementActions": "Improve redirect & canonical hygiene with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for redirect & canonical hygiene with retest date."
+        "proofRequired": "Before/after readback for redirect & canonical hygiene with retest date.",
+        "history": [
+          49,
+          57,
+          58,
+          58,
+          66,
+          66
+        ]
       },
       {
         "key": "crawl_budget_signals",
@@ -523,7 +563,15 @@
           "wasted hits"
         ],
         "improvementActions": "Improve crawl budget signals with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for crawl budget signals with retest date."
+        "proofRequired": "Before/after readback for crawl budget signals with retest date.",
+        "history": [
+          54,
+          62,
+          63,
+          63,
+          71,
+          71
+        ]
       }
     ],
     "ia": [
@@ -542,7 +590,15 @@
           "links per page"
         ],
         "improvementActions": "Improve internal link depth with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for internal link depth with retest date."
+        "proofRequired": "Before/after readback for internal link depth with retest date.",
+        "history": [
+          52,
+          60,
+          61,
+          61,
+          69,
+          69
+        ]
       },
       {
         "key": "hub_to_proof_linking",
@@ -559,7 +615,15 @@
           "CTA paths"
         ],
         "improvementActions": "Improve hub-to-proof linking with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for hub-to-proof linking with retest date."
+        "proofRequired": "Before/after readback for hub-to-proof linking with retest date.",
+        "history": [
+          43,
+          51,
+          52,
+          52,
+          60,
+          60
+        ]
       },
       {
         "key": "orphans_breadcrumbs",
@@ -576,7 +640,15 @@
           "breadcrumb schema"
         ],
         "improvementActions": "Improve orphans & breadcrumbs with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for orphans & breadcrumbs with retest date."
+        "proofRequired": "Before/after readback for orphans & breadcrumbs with retest date.",
+        "history": [
+          48,
+          56,
+          57,
+          57,
+          65,
+          65
+        ]
       }
     ],
     "demand": [
@@ -596,7 +668,15 @@
           "CTR"
         ],
         "improvementActions": "Improve query / keyword demand with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for query / keyword demand with retest date."
+        "proofRequired": "Before/after readback for query / keyword demand with retest date.",
+        "history": [
+          60,
+          68,
+          69,
+          69,
+          77,
+          77
+        ]
       },
       {
         "key": "content_gap_coverage",
@@ -613,7 +693,15 @@
           "SERP features"
         ],
         "improvementActions": "Improve content gap coverage with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for content gap coverage with retest date."
+        "proofRequired": "Before/after readback for content gap coverage with retest date.",
+        "history": [
+          51,
+          59,
+          60,
+          60,
+          68,
+          68
+        ]
       },
       {
         "key": "rank_tracker_movement",
@@ -629,7 +717,15 @@
           "wins/losses"
         ],
         "improvementActions": "Improve rank-tracker movement with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for rank-tracker movement with retest date."
+        "proofRequired": "Before/after readback for rank-tracker movement with retest date.",
+        "history": [
+          56,
+          64,
+          65,
+          65,
+          73,
+          73
+        ]
       }
     ],
     "proof": [
@@ -649,7 +745,15 @@
           "tables"
         ],
         "improvementActions": "Improve eeat proof assets with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for eeat proof assets with retest date."
+        "proofRequired": "Before/after readback for eeat proof assets with retest date.",
+        "history": [
+          56,
+          64,
+          65,
+          65,
+          73,
+          73
+        ]
       },
       {
         "key": "authorship_dates",
@@ -666,7 +770,15 @@
           "datePublished"
         ],
         "improvementActions": "Improve authorship & dates with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for authorship & dates with retest date."
+        "proofRequired": "Before/after readback for authorship & dates with retest date.",
+        "history": [
+          47,
+          55,
+          56,
+          56,
+          64,
+          64
+        ]
       },
       {
         "key": "old_copy_consistency",
@@ -683,7 +795,15 @@
           "terminology"
         ],
         "improvementActions": "Improve old-copy consistency with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for old-copy consistency with retest date."
+        "proofRequired": "Before/after readback for old-copy consistency with retest date.",
+        "history": [
+          52,
+          60,
+          61,
+          61,
+          69,
+          69
+        ]
       }
     ],
     "authority": [
@@ -701,7 +821,15 @@
           "DR"
         ],
         "improvementActions": "Improve referring domains with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for referring domains with retest date."
+        "proofRequired": "Before/after readback for referring domains with retest date.",
+        "history": [
+          44,
+          52,
+          53,
+          53,
+          61,
+          61
+        ]
       },
       {
         "key": "link_quality_spam_risk",
@@ -718,7 +846,15 @@
           "anchor mix"
         ],
         "improvementActions": "Improve link quality / spam risk with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for link quality / spam risk with retest date."
+        "proofRequired": "Before/after readback for link quality / spam risk with retest date.",
+        "history": [
+          35,
+          43,
+          44,
+          44,
+          52,
+          52
+        ]
       },
       {
         "key": "approved_outreach_footprint",
@@ -733,7 +869,15 @@
           "sent/earned links"
         ],
         "improvementActions": "Improve approved outreach footprint with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for approved outreach footprint with retest date."
+        "proofRequired": "Before/after readback for approved outreach footprint with retest date.",
+        "history": [
+          40,
+          48,
+          49,
+          49,
+          57,
+          57
+        ]
       }
     ],
     "local": [
@@ -753,7 +897,15 @@
           "services"
         ],
         "improvementActions": "Improve gbp completeness with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for gbp completeness with retest date."
+        "proofRequired": "Before/after readback for gbp completeness with retest date.",
+        "history": [
+          49,
+          57,
+          58,
+          58,
+          66,
+          66
+        ]
       },
       {
         "key": "review_depth_cadence",
@@ -770,7 +922,15 @@
           "response rate"
         ],
         "improvementActions": "Improve review depth & cadence with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for review depth & cadence with retest date."
+        "proofRequired": "Before/after readback for review depth & cadence with retest date.",
+        "history": [
+          40,
+          48,
+          49,
+          49,
+          57,
+          57
+        ]
       },
       {
         "key": "citation_nap_consistency",
@@ -786,7 +946,15 @@
           "duplicates"
         ],
         "improvementActions": "Improve citation / nap consistency with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for citation / nap consistency with retest date."
+        "proofRequired": "Before/after readback for citation / nap consistency with retest date.",
+        "history": [
+          45,
+          53,
+          54,
+          54,
+          62,
+          62
+        ]
       }
     ],
     "aigeo": [
@@ -807,7 +975,15 @@
           "PerplexityBot"
         ],
         "improvementActions": "Improve ai crawler access with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for ai crawler access with retest date."
+        "proofRequired": "Before/after readback for ai crawler access with retest date.",
+        "history": [
+          48,
+          56,
+          57,
+          57,
+          65,
+          65
+        ]
       },
       {
         "key": "prompt_citation_baseline",
@@ -825,7 +1001,15 @@
           "answer shape"
         ],
         "improvementActions": "Improve prompt citation baseline with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for prompt citation baseline with retest date."
+        "proofRequired": "Before/after readback for prompt citation baseline with retest date.",
+        "history": [
+          39,
+          47,
+          48,
+          48,
+          56,
+          56
+        ]
       },
       {
         "key": "entity_schema_clarity",
@@ -842,7 +1026,15 @@
           "sameAs"
         ],
         "improvementActions": "Improve entity / schema clarity with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for entity / schema clarity with retest date."
+        "proofRequired": "Before/after readback for entity / schema clarity with retest date.",
+        "history": [
+          44,
+          52,
+          53,
+          53,
+          61,
+          61
+        ]
       }
     ],
     "perf": [
@@ -862,7 +1054,15 @@
           "INP"
         ],
         "improvementActions": "Improve core web vitals with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for core web vitals with retest date."
+        "proofRequired": "Before/after readback for core web vitals with retest date.",
+        "history": [
+          64,
+          72,
+          73,
+          73,
+          81,
+          81
+        ]
       },
       {
         "key": "mobile_ux",
@@ -879,7 +1079,15 @@
           "viewport"
         ],
         "improvementActions": "Improve mobile ux with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for mobile ux with retest date."
+        "proofRequired": "Before/after readback for mobile ux with retest date.",
+        "history": [
+          55,
+          63,
+          64,
+          64,
+          72,
+          72
+        ]
       },
       {
         "key": "render_js_budget",
@@ -896,7 +1104,15 @@
           "main-thread"
         ],
         "improvementActions": "Improve render / js budget with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for render / js budget with retest date."
+        "proofRequired": "Before/after readback for render / js budget with retest date.",
+        "history": [
+          60,
+          68,
+          69,
+          69,
+          77,
+          77
+        ]
       }
     ],
     "trust": [
@@ -916,7 +1132,15 @@
           "ARIA"
         ],
         "improvementActions": "Improve accessibility (aa) with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for accessibility (aa) with retest date."
+        "proofRequired": "Before/after readback for accessibility (aa) with retest date.",
+        "history": [
+          62,
+          70,
+          71,
+          71,
+          79,
+          79
+        ]
       },
       {
         "key": "security_headers_tls",
@@ -934,7 +1158,15 @@
           "cert"
         ],
         "improvementActions": "Improve security headers & tls with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for security headers & tls with retest date."
+        "proofRequired": "Before/after readback for security headers & tls with retest date.",
+        "history": [
+          53,
+          61,
+          62,
+          62,
+          70,
+          70
+        ]
       },
       {
         "key": "privacy_consent",
@@ -950,7 +1182,15 @@
           "data handling"
         ],
         "improvementActions": "Improve privacy & consent with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for privacy & consent with retest date."
+        "proofRequired": "Before/after readback for privacy & consent with retest date.",
+        "history": [
+          58,
+          66,
+          67,
+          67,
+          75,
+          75
+        ]
       }
     ],
     "cro": [
@@ -970,7 +1210,15 @@
           "errors"
         ],
         "improvementActions": "Improve cta & form path integrity with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for cta & form path integrity with retest date."
+        "proofRequired": "Before/after readback for cta & form path integrity with retest date.",
+        "history": [
+          44,
+          52,
+          53,
+          53,
+          61,
+          61
+        ]
       },
       {
         "key": "behavior_tracking_coverage",
@@ -989,7 +1237,15 @@
           "consent"
         ],
         "improvementActions": "Improve behavior tracking coverage with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for behavior tracking coverage with retest date."
+        "proofRequired": "Before/after readback for behavior tracking coverage with retest date.",
+        "history": [
+          35,
+          43,
+          44,
+          44,
+          52,
+          52
+        ]
       },
       {
         "key": "friction_rage_dead_clicks",
@@ -1006,7 +1262,15 @@
           "dead clicks"
         ],
         "improvementActions": "Improve friction (rage/dead clicks) with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for friction (rage/dead clicks) with retest date."
+        "proofRequired": "Before/after readback for friction (rage/dead clicks) with retest date.",
+        "history": [
+          40,
+          48,
+          49,
+          49,
+          57,
+          57
+        ]
       }
     ],
     "attribution": [
@@ -1025,7 +1289,15 @@
           "UTM hygiene"
         ],
         "improvementActions": "Improve source / medium join with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for source / medium join with retest date."
+        "proofRequired": "Before/after readback for source / medium join with retest date.",
+        "history": [
+          44,
+          52,
+          53,
+          53,
+          61,
+          61
+        ]
       },
       {
         "key": "conversion_event_integrity",
@@ -1042,7 +1314,15 @@
           "dedupe"
         ],
         "improvementActions": "Improve conversion event integrity with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for conversion event integrity with retest date."
+        "proofRequired": "Before/after readback for conversion event integrity with retest date.",
+        "history": [
+          35,
+          43,
+          44,
+          44,
+          52,
+          52
+        ]
       },
       {
         "key": "reporting_governance",
@@ -1059,7 +1339,15 @@
           "ownership"
         ],
         "improvementActions": "Improve reporting governance with approval; verify with a fresh readback.",
-        "proofRequired": "Before/after readback for reporting governance with retest date."
+        "proofRequired": "Before/after readback for reporting governance with retest date.",
+        "history": [
+          40,
+          48,
+          49,
+          49,
+          57,
+          57
+        ]
       }
     ]
   }
