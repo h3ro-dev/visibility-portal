@@ -61,6 +61,7 @@ export function mountRadar3D(root, timeline) {
   const meas = (timeline.measurements || []).slice();
   const N = axes.length, M = meas.length;
   const spans = clusterSpans(axes);
+  if (!N || !M) { root.classList.add("vp"); root.innerHTML = '<div style="padding:18px;color:#64706a;font:14px Inter,system-ui,sans-serif">No timeline data to show yet.</div>'; return; }
   let selected = Math.max(0, M - 1);
   const TAU = Math.PI * 2;
 
@@ -319,6 +320,15 @@ export function mountRadar3D(root, timeline) {
     const row = e.target.closest(".vp-li"); if (row) { showSeries(+row.dataset.sub); }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !drill.hidden) closeDrill(); });
+  drill.addEventListener("keydown", e => {   // focus trap: Tab cycles within the dialog
+    if (e.key !== "Tab") return;
+    const card = drill.querySelector(".vp-drill-card"); if (!card) return;
+    const f = [...card.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])')].filter(el => !el.disabled && el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
 
   // ---- side causal panel + timestamp chips (shared) ----
   function deltaChip(d) { return d ? ` <span class="vp-d ${d > 0 ? "up" : "down"}">${d > 0 ? "+" : ""}${d}</span>` : ""; }
@@ -371,7 +381,7 @@ export function mountRadar3D(root, timeline) {
           `<span class="vp-rank-lab">${esc(r.label)}</span>` +
           `<span class="vp-rank-bar"><span style="width:${r.s}%;background:${bandCss(r.s)}"></span></span>` +
           `<span class="vp-rank-sc" style="color:${bandCss(r.s)}">${r.s}</span>` +
-          (r.conf ? `<span class="vp-rank-dot ${confClass(r.conf)}" title="${esc(r.conf.replace(/_/g, " "))}"></span>` : `<span class="vp-rank-dot none"></span>`) +
+          (r.conf ? `<span class="vp-rank-dot ${confClass(r.conf)}" role="img" aria-label="confidence: ${esc(r.conf.replace(/_/g, " "))}" title="${esc(r.conf.replace(/_/g, " "))}"></span>` : `<span class="vp-rank-dot none" role="img" aria-label="confidence: not set"></span>`) +
           `</button>`;
       }).join("") + `</div>`;
     if (runBadge) {

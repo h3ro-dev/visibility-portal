@@ -54,4 +54,13 @@
   nav.querySelector(".sn-howto").addEventListener("click", open);
   legend.addEventListener("click", function (e) { if (e.target === legend || e.target.closest(".sn-legend-x")) close(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !legend.hidden) close(); });
+  legend.addEventListener("keydown", function (e) {   // focus trap
+    if (e.key !== "Tab") return;
+    var card = legend.querySelector(".sn-legend-card"); if (!card) return;
+    var f = [].slice.call(card.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])')).filter(function (el) { return !el.disabled && el.offsetParent !== null; });
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
 })();

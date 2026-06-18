@@ -44,7 +44,7 @@
 .vp-score { border-radius: 999px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; font-weight: 900; padding: 2px 7px; }
 .vp-eye {
   align-items: center; background: transparent; border: 0; border-radius: 6px; color: var(--muted);
-  cursor: pointer; display: flex; justify-content: center; padding: 2px;
+  cursor: pointer; display: flex; justify-content: center; padding: 2px; min-height: 24px; min-width: 24px;
   transition: color 140ms ease, background-color 140ms ease;
 }
 .vp-eye:hover, .vp-eye:focus-visible { background: #eef3ef; color: var(--teal); outline: none; }
@@ -167,7 +167,12 @@
 .vp-drill-caveat { background: #fbfaf6; border: 1px solid #ece4d2; border-radius: 9px; color: #6a5b3a; font-size: 12px; line-height: 1.5; margin-top: 14px; padding: 10px 12px; }
 .vp-drill-caveat b { color: #8a4b00; }
 @media (max-width: 620px) { .vp-drill-body { grid-template-columns: 1fr; } .vp-subradar { margin: 0 auto; max-width: 320px; } }
-@media (prefers-reduced-motion: reduce) { .vp-drill, .vp-drill-card { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .vp-drill, .vp-drill-card { animation: none; }
+  .vp-axisbar span, .vp-rank-bar span, .vp-cluster-bar span, .vp-li-bar span, .vp-mtn { transition: none; }
+  .vp-btn, .vp-chip, .vp-rank-row, .vp-li { transition: none; }
+  .vp-btn:active, .vp-chip:active, .vp-rank-row:active, .vp-li:active { transform: none; }
+}
 
 /* ---- run badge (live vs demo) ---- */
 .vp-runbadge { border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: .03em; padding: 3px 9px; text-transform: uppercase; }
