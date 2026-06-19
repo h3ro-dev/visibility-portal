@@ -208,6 +208,7 @@
 
     function render3d() {
       var faces = [];
+      st.nodes3d = [];   // pick buffer: every ring vertex's screen pos {x,y,z,axis i,scan t}, rebuilt each frame so clicks stay correct while orbiting
       // tube walls between consecutive measurements
       for (var t = 0; t < M - 1; t++) {
         for (var i = 0; i < N; i++) {
@@ -254,7 +255,8 @@
           if (selected) { ctx.fillStyle = "rgba(39,95,85,0.10)"; ctx.fill(); }
           ctx.globalAlpha = 1;
           // vertices
-          f.pts.forEach(function (pt) {
+          f.pts.forEach(function (pt, ai) {
+            st.nodes3d.push({ x: pt.x, y: pt.y, z: pt.z, i: ai, t: f.t });
             ctx.beginPath(); ctx.arc(pt.x, pt.y, selected ? 3.2 : 2, 0, TAU);
             ctx.fillStyle = bandColor(avg); ctx.globalAlpha = selected ? 1 : 0.5 + near * 0.4;
             ctx.fill(); ctx.globalAlpha = 1;
@@ -482,7 +484,12 @@
     // Detail-on-demand over the overview: a focused sub-radar of the axis's submetrics
     // (radius = score, node size proportional to weight), "where this comes from"
     // (evidence systems), highest-lift submetric, day-one action, and confidence caveat.
-    function subRadarSVG(list, hi) {
+    // a submetric's value at a given scan: prefer its history[run]; fall back to the current .score
+    function scoreAtRun(item, run) {
+      if (item && item.history && run != null && run >= 0 && run < item.history.length && item.history[run] != null && item.history[run] !== "") return num(item.history[run]);
+      return num(item ? item.score : 0);
+    }
+    function subRadarSVG(list, hi, runIdx) {
       if (hi == null) hi = -1;   // index of the submetric to spotlight (the open trend), or -1
       var cx = 170, cy = 158, R = 116, n = list.length;
       function A(i) { return -Math.PI / 2 + TAU * i / n; }
@@ -492,15 +499,16 @@
         svg += '<path d="' + d + 'Z" fill="none" stroke="' + (lv === 100 ? "#c4d2c8" : "#e6ece6") + '" stroke-width="1"/>';
       });
       for (i = 0; i < n; i++) { a = A(i); svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + Math.cos(a) * R).toFixed(1) + '" y2="' + (cy + Math.sin(a) * R).toFixed(1) + '" stroke="#e6ece6" stroke-width="1"/>'; }
-      var poly = ""; for (i = 0; i < n; i++) { a = A(i); rr = R * clamp(num(list[i].score), 0, 100) / 100; poly += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1) + " "; }
+      var poly = ""; for (i = 0; i < n; i++) { a = A(i); rr = R * clamp(scoreAtRun(list[i], runIdx), 0, 100) / 100; poly += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1) + " "; }
       svg += '<path d="' + poly + 'Z" fill="rgba(39,95,85,.14)" stroke="#275f55" stroke-width="2" stroke-linejoin="round"/>';
       for (i = 0; i < n; i++) {
-        a = A(i); var s = clamp(num(list[i].score), 0, 100); rr = R * s / 100; x = cx + Math.cos(a) * rr; y = cy + Math.sin(a) * rr;
+        a = A(i); var s = clamp(scoreAtRun(list[i], runIdx), 0, 100); rr = R * s / 100; x = cx + Math.cos(a) * rr; y = cy + Math.sin(a) * rr;
         var wr = 3 + 4 * (clamp(num(list[i].weight), 0, 20) / 20), on = i === hi;
         if (on) svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (wr + 4).toFixed(1) + '" fill="none" stroke="' + bandColor(s) + '" stroke-width="2"/>';
         svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (on ? wr + 1.5 : wr).toFixed(1) + '" fill="' + bandColor(s) + '" stroke="#fff" stroke-width="1.5"/>';
         var lx = cx + Math.cos(a) * (R + 13), ly = cy + Math.sin(a) * (R + 13);
         svg += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" font-size="11" font-weight="' + (on ? 900 : 800) + '" fill="' + (on ? bandColor(s) : "#46524b") + '" text-anchor="middle" dominant-baseline="central">' + (i + 1) + "</text>";
+        svg += '<circle class="sr3d-sub-node" data-sub="' + i + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (wr + 7).toFixed(1) + '" fill="transparent"><title>' + esc(list[i].label) + ' — click for its trend</title></circle>';
       }
       return '<svg class="sr3d-subradar" viewBox="0 0 340 312" role="img" aria-label="' + n + ' submetrics, radius = score, node size = weight">' + svg + "</svg>";
     }
@@ -559,21 +567,63 @@
       if (!drillState) return;
       var i = drillState.i, list = drillState.list, sub = drillState.sub, labels = measurements.map(function (mm) { return mm.timestamp; });
       var values, color, name;
-      if (sub >= 0) { var sm = list[sub]; values = (sm.history && sm.history.length) ? sm.history : [clamp(num(sm.score), 0, 100)]; color = bandColor(clamp(num(sm.score), 0, 100)); name = sm.label; }
-      else { var key = axes[i].key; values = measurements.map(function (mm) { return clamp(num(mm.scores[key]), 0, 100); }); color = bandColor(clamp(num(measurements[st.selected].scores[key]), 0, 100)); name = "Whole axis"; }
+      var run = (drillState.run != null) ? drillState.run : st.selected;   // the scan this drill is anchored to (the dot you clicked)
+      if (sub >= 0) { var sm = list[sub]; values = (sm.history && sm.history.length) ? sm.history : [clamp(num(sm.score), 0, 100)]; color = bandColor(clamp(scoreAtRun(sm, run), 0, 100)); name = sm.label; }
+      else { var key = axes[i].key; values = measurements.map(function (mm) { return clamp(num(mm.scores[key]), 0, 100); }); color = bandColor(clamp(num(measurements[run].scores[key]), 0, 100)); name = "Whole axis"; }
       var useLabels = values.length === labels.length ? labels : labels.slice(-values.length);
+      var selOnLine = (values.length === labels.length) ? run : values.length - 1;   // keep the highlight valid if a submetric's history is shorter than the run set
       var tEl = drill.querySelector(".sr3d-drill-time");
       if (tEl) tEl.innerHTML = '<div class="sr3d-drill-lbl">Over time · ' + esc(name) + (sub >= 0 ? ' <button class="sr3d-time-back" type="button">← whole axis</button>' : "") + "</div>" +
-        mountainSVG(values, useLabels, st.selected, color) + '<div class="sr3d-time-exp">' + explainerText(values, useLabels) + "</div>";
-      var lEl = drill.querySelector(".sr3d-drill-left"); if (lEl) lEl.innerHTML = subRadarSVG(list, sub);
+        mountainSVG(values, useLabels, selOnLine, color) + '<div class="sr3d-time-exp">' + explainerText(values, useLabels) + "</div>";
+      var lEl = drill.querySelector(".sr3d-drill-left"); if (lEl) lEl.innerHTML = subRadarSVG(list, sub, run);
       var rows = drill.querySelectorAll(".sr3d-li"); for (var r = 0; r < rows.length; r++) rows[r].classList.toggle("active", r === sub);
+      var isEl = drill.querySelector(".sr3d-drill-issues"); if (isEl) isEl.innerHTML = issuesHTML(axes[i].key, axes[i].label, list, sub);
     }
     function showSeries(sub) { if (drillState) { drillState.sub = sub; renderDrillTime(); } }
 
-    function openDrill(i) {
+    // ---- issue layer: the agent-ready work bound to each metric (URLs + repo issue + realized impact).
+    // timeline.issues[axisKey][submetricKey | "_axis"] = [{ title, intent, goal, severity, actionType,
+    //   urls:[{url,problem}], github:{number,url,state}|null, impact:{before,after,delta}|null, status }] ----
+    var issuesData = timeline.issues || {};
+    var SEV = { P0: "p0", P1: "p1", P2: "p2", P3: "p3" };
+    function sevCls(s) { return SEV[String(s || "P2").toUpperCase()] || "p2"; }
+    function sevRank(s) { var k = String(s || "P2").toUpperCase(); return k === "P0" ? 0 : k === "P1" ? 1 : k === "P3" ? 3 : 2; }
+    function shortUrl(u) { try { var x = new URL(u); return x.hostname.replace(/^www\./, "") + (x.pathname === "/" ? "" : x.pathname); } catch (e) { return String(u).replace(/^https?:\/\//, ""); } }
+    function issuesForSub(axisKey, list, sub) {
+      var byAxis = issuesData[axisKey] || {}, out = [];
+      function add(it, smLabel) { var c = {}; for (var k in it) c[k] = it[k]; c._sm = smLabel; out.push(c); }
+      if (sub != null && sub >= 0) { var smk = list[sub] && list[sub].key; (byAxis[smk] || []).forEach(function (it) { add(it, list[sub] && list[sub].label); }); }
+      else { (byAxis._axis || []).forEach(function (it) { add(it, "Whole axis"); }); list.forEach(function (sm) { (byAxis[sm.key] || []).forEach(function (it) { add(it, sm.label); }); }); }
+      out.sort(function (a, b) { return sevRank(a.severity) - sevRank(b.severity); });
+      return out;
+    }
+    function issuesHTML(axisKey, axisLabel, list, sub) {
+      var arr = issuesForSub(axisKey, list, sub), whole = !(sub != null && sub >= 0);
+      var scope = whole ? esc(axisLabel) : esc(axisLabel) + " / " + esc(list[sub].label);
+      var head = '<div class="sr3d-drill-lbl sr3d-issues-lbl">Issues to fix — ' + scope + ' <span class="sr3d-issues-n">' + arr.length + "</span></div>";
+      if (!arr.length) return head + '<div class="sr3d-issues-empty">No issues filed for this metric yet — they appear here as the audit writes them to the repo.</div>';
+      var body = arr.slice(0, 8).map(function (it) {
+        var urls = (it.urls || []).map(function (u) { return '<div class="sr3d-issue-url"><a href="' + esc(u.url) + '" target="_blank" rel="noopener noreferrer">' + esc(shortUrl(u.url)) + ' ↗</a>' + (u.problem ? '<span class="sr3d-issue-prob">' + esc(u.problem) + "</span>" : "") + "</div>"; }).join("");
+        var gh = (it.github && it.github.url) ? '<a class="sr3d-issue-gh" href="' + esc(it.github.url) + '" target="_blank" rel="noopener noreferrer">#' + esc(String(it.github.number || "")) + " · " + esc(it.github.state || "open") + " ↗</a>" : '<span class="sr3d-issue-gh none">not yet filed</span>';
+        var d = (it.impact && it.impact.delta != null) ? num(it.impact.delta) : null;
+        var imp = d != null ? '<span class="sr3d-issue-impact ' + (d > 0 ? "up" : d < 0 ? "down" : "") + '">' + (d > 0 ? "+" + d : d) + (it.impact.before != null ? " (" + esc(String(it.impact.before)) + "→" + esc(String(it.impact.after)) + ")" : "") + "</span>" : "";
+        return '<div class="sr3d-issue ' + sevCls(it.severity) + '">' +
+          '<div class="sr3d-issue-top"><span class="sr3d-sev ' + sevCls(it.severity) + '">' + esc(String(it.severity || "P2").toUpperCase()) + '</span><b class="sr3d-issue-title">' + esc(it.title || "(untitled)") + "</b>" + (it.actionType ? '<span class="sr3d-issue-type">' + esc(it.actionType) + "</span>" : "") + "</div>" +
+          (whole && it._sm ? '<div class="sr3d-issue-sm">' + esc(it._sm) + "</div>" : "") +
+          (it.intent ? '<div class="sr3d-issue-line"><span>Intent</span> ' + esc(it.intent) + "</div>" : "") +
+          (it.goal ? '<div class="sr3d-issue-line"><span>Goal</span> ' + esc(it.goal) + "</div>" : "") +
+          (urls ? '<div class="sr3d-issue-urls">' + urls + "</div>" : "") +
+          '<div class="sr3d-issue-foot">' + gh + imp + (it.status ? '<span class="sr3d-issue-status">' + esc(it.status) + "</span>" : "") + "</div>" +
+        "</div>";
+      }).join("");
+      var more = arr.length > 8 ? '<div class="sr3d-issues-more">+' + (arr.length - 8) + " more</div>" : "";
+      return head + '<div class="sr3d-issues-list">' + body + more + "</div>";
+    }
+
+    function openDrill(i, runT) {
       var key = axes[i].key, list = (subm[key] || []).slice();
       if (!list.length) return;
-      var t = st.selected, m = measurements[t], s = clamp(num(m.scores[key]), 0, 100), det = detOf(t, key);
+      var t = (runT == null) ? st.selected : clamp(runT, 0, M - 1), m = measurements[t], s = clamp(num(m.scores[key]), 0, 100), det = detOf(t, key);
       lastFocus = document.activeElement;
       var sysMap = {}; list.forEach(function (x) { (x.evidenceSystems || []).forEach(function (v) { sysMap[v] = 1; }); });
       var sysArr = Object.keys(sysMap);
@@ -588,14 +638,14 @@
         (det.confidence ? '<span class="sr3d-conf">' + esc(det.confidence.replace(/_/g, " ")) + "</span>" : "") +
         "</div>" +
         // sub-spider (left) next to the time-series mountain range (right, filled by renderDrillTime)
-        '<div class="sr3d-drill-body"><div class="sr3d-drill-left">' + subRadarSVG(list, -1) + '</div><div class="sr3d-drill-right sr3d-drill-time"></div></div>';
+        '<div class="sr3d-drill-body"><div class="sr3d-drill-left">' + subRadarSVG(list, -1, t) + '</div><div class="sr3d-drill-right sr3d-drill-time"></div></div>';
       var info = "";
       if (hl) info += '<div class="sr3d-drill-hl"><span class="sr3d-hl-tag">Highest lift</span><b>' + esc(hlLabel) + "</b></div>";
       if (det.dayOneTactic) info += '<div class="sr3d-drill-act"><div class="sr3d-drill-lbl">Day-one action</div><p>' + esc(det.dayOneTactic) + "</p></div>";
       if (sysArr.length) info += '<div class="sr3d-drill-prov"><div class="sr3d-drill-lbl">Where this comes from</div><div class="sr3d-prov-chips">' + sysArr.slice(0, 14).map(function (v) { return "<span>" + esc(v) + "</span>"; }).join("") + "</div></div>";
       if (info) h += '<div class="sr3d-drill-info">' + info + "</div>";
-      h += '<div class="sr3d-drill-lbl sr3d-list-lbl">Submetrics — click one for its own trend</div><div class="sr3d-drill-list">' + list.map(function (x, idx) {
-        var ss = clamp(num(x.score), 0, 100);
+      h += '<div class="sr3d-drill-lbl sr3d-list-lbl">Submetrics — click a node on the spider (or a row) for its own trend</div><div class="sr3d-drill-list">' + list.map(function (x, idx) {
+        var ss = clamp(scoreAtRun(x, t), 0, 100);
         return '<button class="sr3d-li" type="button" data-sub="' + idx + '"><span class="sr3d-li-n" style="background:' + bandColor(ss) + '">' + (idx + 1) + "</span>" +
           '<div class="sr3d-li-main"><div class="sr3d-li-top"><b>' + esc(x.label) + '</b><span class="sr3d-li-score" style="color:' + bandColor(ss) + '">' + ss + "</span></div>" +
           '<div class="sr3d-li-bar"><span style="width:' + ss + "%;background:" + bandColor(ss) + '"></span></div>' +
@@ -603,10 +653,11 @@
           ((x.sourceExamples || []).length ? '<div class="sr3d-li-src">' + esc(x.sourceExamples.join(" · ")) + "</div>" : "") +
           '</div><span class="sr3d-li-w" title="weight in the axis score">' + esc(x.weight) + "%</span></button>";
       }).join("") + "</div>";
+      h += '<div class="sr3d-drill-issues"></div>';   // agent-ready issues for the selected metric (filled by renderDrillTime on sub change)
       if (det.whatCannotProve) h += '<div class="sr3d-drill-caveat"><b>Can\'t yet prove —</b> ' + esc(det.whatCannotProve) + "</div>";
       h += "</div>";
       drill.innerHTML = h;
-      drillState = { i: i, list: list, sub: -1 };   // start on the whole-axis trend
+      drillState = { i: i, list: list, sub: -1, run: t };   // start on the whole-axis trend, anchored to the clicked scan
       renderDrillTime();
       drill.hidden = false;
       var xb = drill.querySelector(".sr3d-drill-x"); if (xb) xb.focus();
@@ -615,6 +666,8 @@
     drill.addEventListener("click", function (e) {
       if (e.target === drill || e.target.closest(".sr3d-drill-x")) { closeDrill(); return; }
       if (e.target.closest(".sr3d-time-back")) { showSeries(-1); return; }       // back to whole-axis trend
+      var sn = e.target.closest(".sr3d-sub-node");                                // a dot on the sub-spider → that submetric's trend (toggle off if already open)
+      if (sn) { var si = +sn.dataset.sub; showSeries(drillState && drillState.sub === si ? -1 : si); return; }
       var row = e.target.closest(".sr3d-li"); if (row) { showSeries(+row.dataset.sub); }   // glance → expand this submetric
     });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !drill.hidden) closeDrill(); });
@@ -687,7 +740,14 @@
       var wasClick = st.moved < 6, was3d = st.mode === "3d"; st.drag = null;
       if (wasClick) {
         st.vel.yaw = 0; st.vel.pitch = 0;
-        if (was3d) { var hit = hitRing(e); if (hit != null) { st.selected = hit; setMode("flat"); } }
+        if (was3d) {
+          var hn = hitNode3d(e);
+          if (hn != null) {                                  // clicked a dot on the tube → drill that axis at that scan
+            st.selected = hn.t;
+            if ((subm[axes[hn.i].key] || []).length) { render(); openDrill(hn.i, hn.t); }
+            else setMode("flat");                            // axis has no submetrics: just focus that scan flat
+          } else { var hit = hitRing(e); if (hit != null) { st.selected = hit; setMode("flat"); } }
+        }
         else { var hv = hitVertexFlat(e); if (hv != null && (subm[axes[hv].key] || []).length) { openDrill(hv); } else { setMode("3d"); } }
         return;
       }
@@ -751,6 +811,15 @@
     function canvasPoint(e) {
       var r = canvas.getBoundingClientRect();
       return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    // nearest tube vertex to the pointer (within tolerance), preferring the node nearest the camera
+    function hitNode3d(e) {
+      var pt = canvasPoint(e), buf = st.nodes3d || [], best = null, bestZ = -Infinity, TOL = 13;
+      for (var k = 0; k < buf.length; k++) {
+        var nd = buf[k];
+        if (Math.hypot(nd.x - pt.x, nd.y - pt.y) <= TOL && nd.z > bestZ) { best = nd; bestZ = nd.z; }
+      }
+      return best ? { i: best.i, t: best.t } : null;
     }
     function hitRing(e) {
       var pt = canvasPoint(e);

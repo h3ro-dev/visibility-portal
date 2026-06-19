@@ -260,6 +260,8 @@
 .sr3d-conf { background: #eef3ef; border-radius: 999px; color: #3a4f5c; font-size: 10px; font-weight: 800; letter-spacing: .02em; padding: 3px 9px; text-transform: capitalize; }
 .sr3d-drill-body { align-items: start; display: grid; gap: 18px; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); margin-top: 16px; }
 .sr3d-subradar { display: block; height: auto; width: 100%; }
+.sr3d-sub-node { cursor: pointer; transition: fill .12s ease; }
+@media (hover: hover) and (pointer: fine) { .sr3d-sub-node:hover { fill: rgba(39, 95, 85, .12); } }
 .sr3d-drill-right { align-content: start; display: grid; gap: 14px; }
 .sr3d-drill-lbl { color: var(--sr-muted); font-size: 10px; font-weight: 900; letter-spacing: .05em; margin-bottom: 5px; text-transform: uppercase; }
 .sr3d-drill-hl { align-items: baseline; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -298,6 +300,39 @@
 .sr3d-li-w { color: var(--sr-muted); font-family: ui-monospace, Menlo, monospace; font-size: 12px; font-weight: 800; }
 .sr3d-drill-caveat { background: #fbfaf6; border: 1px solid #ece4d2; border-radius: 9px; color: #6a5b3a; font-size: 12px; line-height: 1.5; margin-top: 14px; padding: 10px 12px; }
 .sr3d-drill-caveat b { color: #8a4b00; }
+
+/* ---- issue layer: the agent-ready work bound to each metric ---- */
+.sr3d-drill-issues { margin-top: 16px; }
+.sr3d-issues-lbl { align-items: center; display: flex; gap: 8px; }
+.sr3d-issues-n { background: var(--sr-teal); border-radius: 999px; color: #fff; font-size: 11px; font-weight: 800; min-width: 18px; padding: 1px 7px; text-align: center; }
+.sr3d-issues-empty { background: #f6f9f6; border: 1px dashed var(--sr-line); border-radius: 9px; color: var(--sr-muted); font-size: 12.5px; padding: 12px 14px; }
+.sr3d-issues-list { display: grid; gap: 9px; }
+.sr3d-issue { background: var(--sr-panel); border: 1px solid var(--sr-line); border-left: 4px solid #c7d2cb; border-radius: 10px; padding: 11px 13px; }
+.sr3d-issue.p0 { border-left-color: #9b2424; }
+.sr3d-issue.p1 { border-left-color: #c0701c; }
+.sr3d-issue.p2 { border-left-color: #2f7d86; }
+.sr3d-issue.p3 { border-left-color: #9aa6a0; }
+.sr3d-issue-top { align-items: baseline; display: flex; flex-wrap: wrap; gap: 8px; }
+.sr3d-sev { border-radius: 6px; color: #fff; font-size: 10px; font-weight: 900; letter-spacing: .03em; padding: 2px 7px; }
+.sr3d-sev.p0 { background: #9b2424; } .sr3d-sev.p1 { background: #c0701c; } .sr3d-sev.p2 { background: #2f7d86; } .sr3d-sev.p3 { background: #768079; }
+.sr3d-issue-title { color: var(--sr-ink); font-size: 13.5px; font-weight: 700; line-height: 1.35; }
+.sr3d-issue-type { background: #eef3ef; border-radius: 6px; color: #3a4f5c; font-family: ui-monospace, Menlo, monospace; font-size: 10px; margin-left: auto; padding: 2px 7px; }
+.sr3d-issue-sm { color: var(--sr-muted); font-size: 11px; font-weight: 700; margin-top: 3px; text-transform: uppercase; letter-spacing: .03em; }
+.sr3d-issue-line { color: #3c4a43; font-size: 12.5px; line-height: 1.5; margin-top: 6px; }
+.sr3d-issue-line span { color: var(--sr-muted); font-size: 10px; font-weight: 900; letter-spacing: .05em; margin-right: 6px; text-transform: uppercase; }
+.sr3d-issue-urls { display: grid; gap: 4px; margin-top: 8px; }
+.sr3d-issue-url { align-items: baseline; display: flex; flex-wrap: wrap; gap: 8px; }
+.sr3d-issue-url a { color: var(--sr-teal); font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; font-weight: 600; text-decoration: none; }
+.sr3d-issue-url a:hover { text-decoration: underline; }
+.sr3d-issue-prob { color: var(--sr-muted); font-size: 11px; }
+.sr3d-issue-foot { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 9px; }
+.sr3d-issue-gh { background: #1f2328; border-radius: 7px; color: #fff; font-family: ui-monospace, Menlo, monospace; font-size: 11px; font-weight: 700; padding: 3px 9px; text-decoration: none; }
+.sr3d-issue-gh.none { background: #f1f3f1; color: #8a948d; font-weight: 600; }
+.sr3d-issue-impact { font-size: 12px; font-weight: 800; }
+.sr3d-issue-impact.up { color: var(--sr-good); } .sr3d-issue-impact.down { color: #9b2424; }
+.sr3d-issue-status { background: #eef3ef; border-radius: 999px; color: #3a4f5c; font-size: 10px; font-weight: 800; margin-left: auto; padding: 2px 9px; text-transform: capitalize; }
+.sr3d-issues-more { color: var(--sr-muted); font-size: 12px; padding: 4px 2px; }
+
 @media (max-width: 620px) { .sr3d-drill-body { grid-template-columns: 1fr; } .sr3d-subradar { margin: 0 auto; max-width: 320px; } }
 @media (prefers-reduced-motion: reduce) {
   .sr3d-drill, .sr3d-drill-card { animation: none; }

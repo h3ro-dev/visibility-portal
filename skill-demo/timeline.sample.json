@@ -611,7 +611,7 @@
           "sitemap"
         ],
         "sourceExamples": [
-          "service\u2192proof",
+          "service→proof",
           "CTA paths"
         ],
         "improvementActions": "Improve hub-to-proof linking with approval; verify with a fresh readback.",
@@ -1350,5 +1350,187 @@
         ]
       }
     ]
+  },
+  "issues": {
+    "local": {
+      "_axis": [
+        {
+          "title": "Claim and consolidate duplicate Google Business Profiles",
+          "severity": "P0",
+          "actionType": "local-seo",
+          "intent": "Duplicate/unclaimed listings split the ranking signal and let stale data win branded local queries.",
+          "goal": "One verified, owner-managed GBP; every duplicate merged or marked permanently closed.",
+          "urls": [
+            {
+              "url": "https://www.google.com/maps/search/commercial+funding+partners",
+              "problem": "two listings, conflicting hours"
+            }
+          ],
+          "github": null,
+          "status": "proposed"
+        }
+      ],
+      "citation_nap_consistency": [
+        {
+          "title": "Fix NAP mismatches across the 7 core directories",
+          "severity": "P0",
+          "actionType": "local-seo",
+          "intent": "Inconsistent name/address/phone fragments local authority and breaks the entity match crawlers rely on.",
+          "goal": "Byte-identical NAP on all 7 directories; confirm with a fresh citation audit.",
+          "urls": [
+            {
+              "url": "https://www.bbb.org/us/commercial-funding-partners",
+              "problem": "old suite number"
+            },
+            {
+              "url": "https://www.yelp.com/biz/commercial-funding-partners",
+              "problem": "tracking phone, not the main line"
+            },
+            {
+              "url": "https://www.bing.com/maps?q=commercial+funding+partners",
+              "problem": "abbreviated street name"
+            }
+          ],
+          "github": null,
+          "status": "proposed"
+        },
+        {
+          "title": "Add LocalBusiness + FinancialService schema to the locations page",
+          "severity": "P1",
+          "actionType": "technical-seo",
+          "intent": "Without entity schema, engines can't confidently bind the site to the GBP/citation graph.",
+          "goal": "Valid LocalBusiness/FinancialService JSON-LD, matching NAP, sameAs to the verified profiles.",
+          "urls": [
+            {
+              "url": "https://commercialfundingpartners.com/locations",
+              "problem": "no structured data emitted"
+            }
+          ],
+          "github": null,
+          "status": "proposed"
+        }
+      ],
+      "gbp_completeness": [
+        {
+          "title": "Complete and verify the HQ Google Business Profile",
+          "severity": "P1",
+          "actionType": "local-seo",
+          "intent": "GBP completeness is the primary driver of map-pack visibility for high-intent funding queries.",
+          "goal": "100% profile (categories, services, hours, description, >=10 photos) with the verified badge.",
+          "urls": [
+            {
+              "url": "https://commercialfundingpartners.com/contact",
+              "problem": "hours/address differ from GBP"
+            }
+          ],
+          "github": null,
+          "status": "proposed"
+        },
+        {
+          "title": "Add secondary GBP categories (Equipment Financing, Working Capital)",
+          "severity": "P2",
+          "actionType": "local-seo",
+          "intent": "A single primary category caps eligibility for adjacent local intents the firm actually serves.",
+          "goal": "Primary + 4 relevant secondary categories, each mapped to a service page.",
+          "urls": [],
+          "github": null,
+          "status": "proposed"
+        }
+      ],
+      "review_depth_cadence": [
+        {
+          "title": "Stand up a post-funding review-request flow",
+          "severity": "P1",
+          "actionType": "reputation",
+          "intent": "Review volume and recency are top local factors and the biggest conversion lever on a trust-sensitive purchase.",
+          "goal": ">=1 net-new review/week (first-party + GBP); respond to every review within 48h.",
+          "urls": [
+            {
+              "url": "https://commercialfundingpartners.com/testimonials",
+              "problem": "static quotes, no live review feed"
+            }
+          ],
+          "github": null,
+          "status": "proposed"
+        },
+        {
+          "title": "Backfill responses to the 12 unanswered Google reviews",
+          "severity": "P3",
+          "actionType": "reputation",
+          "intent": "Unanswered reviews read as inattentive and quietly suppress conversion.",
+          "goal": "100% of existing reviews answered; response template + escalation path documented.",
+          "urls": [],
+          "github": null,
+          "impact": {
+            "before": 56,
+            "after": 62,
+            "delta": 6
+          },
+          "status": "verified"
+        }
+      ]
+    },
+    "authority": {
+      "_axis": [
+        {
+          "title": "Land 3 industry bylines / expert placements this quarter",
+          "severity": "P1",
+          "actionType": "pr",
+          "intent": "Third-party authority from reputable finance/industry sites is what moves EEAT and AI-citation eligibility — on-site content alone can't.",
+          "goal": "3 published placements with author bio + a contextual link back; tracked in the citation register.",
+          "urls": [],
+          "github": null,
+          "status": "proposed"
+        },
+        {
+          "title": "Syndicate the funding-guide hub to 4 partner/aggregator sites",
+          "severity": "P2",
+          "actionType": "syndication",
+          "intent": "Distribution multiplies the reach of assets we already have and earns referring domains without net-new writing.",
+          "goal": "4 partner republications with canonical + attribution; referral + citation lift measured at next scan.",
+          "urls": [],
+          "github": null,
+          "status": "proposed"
+        }
+      ]
+    },
+    "demand": {
+      "_axis": [
+        {
+          "title": "Run a branded-search defense + high-intent campaign on Google Ads",
+          "severity": "P2",
+          "actionType": "ads",
+          "intent": "Competitors bid on the brand term and high-intent funding queries; paid captures demand now while organic compounds.",
+          "goal": "Brand-defense campaign live + a high-intent non-brand adgroup; CAC and assisted conversions tracked.",
+          "urls": [],
+          "github": null,
+          "status": "proposed"
+        }
+      ]
+    },
+    "aigeo": {
+      "_axis": [
+        {
+          "title": "Publish llms.txt + an entity-grounded FAQ/answer hub",
+          "severity": "P1",
+          "actionType": "geo",
+          "intent": "AI answer engines cite structured, entity-grounded answers; today the offering isn't reliably retrievable or citable.",
+          "goal": "llms.txt shipped + 15 Q&A passages with schema; re-test prompt-citation baseline at next scan.",
+          "urls": [],
+          "github": null,
+          "status": "proposed"
+        },
+        {
+          "title": "Pitch a data-backed funding-trends release for press pickup",
+          "severity": "P2",
+          "actionType": "pr",
+          "intent": "Earned coverage produces the third-party citations AI engines weight most and lifts authority simultaneously.",
+          "goal": "1 data release pitched to 10 outlets; >=2 pickups with links; logged to the causal register.",
+          "urls": [],
+          "github": null,
+          "status": "proposed"
+        }
+      ]
+    }
   }
 }

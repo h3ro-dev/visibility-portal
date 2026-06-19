@@ -279,8 +279,46 @@ export function mountRadar3D(root, timeline) {
       mountainSVG(values, useLabels, selOnLine, color) + `<div class="vp-time-exp">${explainerText(values, useLabels)}</div>`;
     const lEl = drill.querySelector(".vp-drill-left"); if (lEl) lEl.innerHTML = subRadarSVG(list, sub, run);
     drill.querySelectorAll(".vp-li").forEach((b, idx) => b.classList.toggle("active", idx === sub));
+    const isEl = drill.querySelector(".vp-drill-issues"); if (isEl) isEl.innerHTML = issuesHTML(axes[i].key, axes[i].label, list, sub);
   }
   function showSeries(sub) { if (drillState) { drillState.sub = sub; renderDrillTime(); } }
+
+  // ---- issue layer: the agent-ready work bound to each metric (URLs + repo issue + realized impact).
+  // timeline.issues[axisKey][submetricKey | "_axis"] = [{title,intent,goal,severity,actionType,urls,github,impact,status}] ----
+  const issuesData = timeline.issues || {};
+  const SEV = { P0: "p0", P1: "p1", P2: "p2", P3: "p3" };
+  const sevCls = (s) => SEV[String(s || "P2").toUpperCase()] || "p2";
+  const sevRank = (s) => { const k = String(s || "P2").toUpperCase(); return k === "P0" ? 0 : k === "P1" ? 1 : k === "P3" ? 3 : 2; };
+  const shortUrl = (u) => { try { const x = new URL(u); return x.hostname.replace(/^www\./, "") + (x.pathname === "/" ? "" : x.pathname); } catch (e) { return String(u).replace(/^https?:\/\//, ""); } };
+  function issuesForSub(axisKey, list, sub) {
+    const byAxis = issuesData[axisKey] || {}, out = [];
+    const add = (it, smLabel) => out.push(Object.assign({}, it, { _sm: smLabel }));
+    if (sub != null && sub >= 0) { const smk = list[sub] && list[sub].key; (byAxis[smk] || []).forEach((it) => add(it, list[sub] && list[sub].label)); }
+    else { (byAxis._axis || []).forEach((it) => add(it, "Whole axis")); list.forEach((sm) => (byAxis[sm.key] || []).forEach((it) => add(it, sm.label))); }
+    return out.sort((a, b) => sevRank(a.severity) - sevRank(b.severity));
+  }
+  function issuesHTML(axisKey, axisLabel, list, sub) {
+    const arr = issuesForSub(axisKey, list, sub), whole = !(sub != null && sub >= 0);
+    const scope = whole ? esc(axisLabel) : `${esc(axisLabel)} / ${esc(list[sub].label)}`;
+    const head = `<div class="vp-drill-lbl vp-issues-lbl">Issues to fix — ${scope} <span class="vp-issues-n">${arr.length}</span></div>`;
+    if (!arr.length) return head + `<div class="vp-issues-empty">No issues filed for this metric yet — they appear here as the audit writes them to the repo.</div>`;
+    const body = arr.slice(0, 8).map((it) => {
+      const urls = (it.urls || []).map((u) => `<div class="vp-issue-url"><a href="${esc(u.url)}" target="_blank" rel="noopener noreferrer">${esc(shortUrl(u.url))} ↗</a>${u.problem ? `<span class="vp-issue-prob">${esc(u.problem)}</span>` : ""}</div>`).join("");
+      const gh = (it.github && it.github.url) ? `<a class="vp-issue-gh" href="${esc(it.github.url)}" target="_blank" rel="noopener noreferrer">#${esc(String(it.github.number || ""))} · ${esc(it.github.state || "open")} ↗</a>` : `<span class="vp-issue-gh none">not yet filed</span>`;
+      const d = (it.impact && it.impact.delta != null) ? num(it.impact.delta) : null;
+      const imp = d != null ? `<span class="vp-issue-impact ${d > 0 ? "up" : d < 0 ? "down" : ""}">${d > 0 ? "+" + d : d}${it.impact.before != null ? ` (${esc(String(it.impact.before))}→${esc(String(it.impact.after))})` : ""}</span>` : "";
+      return `<div class="vp-issue ${sevCls(it.severity)}">` +
+        `<div class="vp-issue-top"><span class="vp-sev ${sevCls(it.severity)}">${esc(String(it.severity || "P2").toUpperCase())}</span><b class="vp-issue-title">${esc(it.title || "(untitled)")}</b>${it.actionType ? `<span class="vp-issue-type">${esc(it.actionType)}</span>` : ""}</div>` +
+        (whole && it._sm ? `<div class="vp-issue-sm">${esc(it._sm)}</div>` : "") +
+        (it.intent ? `<div class="vp-issue-line"><span>Intent</span> ${esc(it.intent)}</div>` : "") +
+        (it.goal ? `<div class="vp-issue-line"><span>Goal</span> ${esc(it.goal)}</div>` : "") +
+        (urls ? `<div class="vp-issue-urls">${urls}</div>` : "") +
+        `<div class="vp-issue-foot">${gh}${imp}${it.status ? `<span class="vp-issue-status">${esc(it.status)}</span>` : ""}</div>` +
+      `</div>`;
+    }).join("");
+    const more = arr.length > 8 ? `<div class="vp-issues-more">+${arr.length - 8} more</div>` : "";
+    return head + `<div class="vp-issues-list">${body}${more}</div>`;
+  }
 
   function openDrill(i, runT) {
     const key = axes[i].key, list = (subm[key] || []).slice();
@@ -314,6 +352,7 @@ export function mountRadar3D(root, timeline) {
         ((x.sourceExamples || []).length ? `<div class="vp-li-src">${esc(x.sourceExamples.join(" · "))}</div>` : "") +
         `</div><span class="vp-li-w" title="weight in the axis score">${esc(x.weight)}%</span></button>`;
     }).join("")}</div>`;
+    h += `<div class="vp-drill-issues"></div>`;   // agent-ready issues for the selected metric (filled by renderDrillTime on sub change)
     if (det.whatCannotProve) h += `<div class="vp-drill-caveat"><b>Can't yet prove —</b> ${esc(det.whatCannotProve)}</div>`;
     h += `</div>`;
     drill.innerHTML = h;
