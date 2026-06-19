@@ -213,20 +213,26 @@ export function mountRadar3D(root, timeline) {
   root.appendChild(drill);
   let lastFocus = null;
 
-  function subRadarSVG(list, hi) {
+  // a submetric's value at a given scan: prefer its history[run]; fall back to the current .score
+  function scoreAtRun(item, run) {
+    if (item && item.history && run != null && run >= 0 && run < item.history.length && item.history[run] != null && item.history[run] !== "") return num(item.history[run]);
+    return num(item ? item.score : 0);
+  }
+  function subRadarSVG(list, hi, runIdx) {
     const cx = 170, cy = 158, R = 116, n = list.length, A = i => -Math.PI / 2 + TAU * i / n;
     const ring = lv => { let d = ""; for (let i = 0; i <= n; i++) { const a = A(i % n), rr = R * lv / 100; d += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1) + " "; } return `<path d="${d}Z" fill="none" stroke="${lv === 100 ? "#c4d2c8" : "#e6ece6"}" stroke-width="1"/>`; };
     let svg = [25, 50, 75, 100].map(ring).join("");
     for (let i = 0; i < n; i++) { const a = A(i); svg += `<line x1="${cx}" y1="${cy}" x2="${(cx + Math.cos(a) * R).toFixed(1)}" y2="${(cy + Math.sin(a) * R).toFixed(1)}" stroke="#e6ece6" stroke-width="1"/>`; }
-    let poly = ""; for (let i = 0; i < n; i++) { const a = A(i), rr = R * clamp(num(list[i].score), 0, 100) / 100; poly += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1) + " "; }
+    let poly = ""; for (let i = 0; i < n; i++) { const a = A(i), rr = R * clamp(scoreAtRun(list[i], runIdx), 0, 100) / 100; poly += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1) + " "; }
     svg += `<path d="${poly}Z" fill="rgba(39,95,85,.14)" stroke="#275f55" stroke-width="2" stroke-linejoin="round"/>`;
     for (let i = 0; i < n; i++) {
-      const a = A(i), s = clamp(num(list[i].score), 0, 100), rr = R * s / 100, x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      const a = A(i), s = clamp(scoreAtRun(list[i], runIdx), 0, 100), rr = R * s / 100, x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
       const wr = 3 + 4 * (clamp(num(list[i].weight), 0, 20) / 20), on = i === hi;
       if (on) svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(wr + 4).toFixed(1)}" fill="none" stroke="${bandCss(s)}" stroke-width="2"/>`;
       svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(on ? wr + 1.5 : wr).toFixed(1)}" fill="${bandCss(s)}" stroke="#fff" stroke-width="1.5"/>`;
       const lx = cx + Math.cos(a) * (R + 13), ly = cy + Math.sin(a) * (R + 13);
       svg += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-size="11" font-weight="${on ? 900 : 800}" fill="${on ? bandCss(s) : "#46524b"}" text-anchor="middle" dominant-baseline="central">${i + 1}</text>`;
+      svg += `<circle class="vp-sub-node" data-sub="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(wr + 7).toFixed(1)}" fill="transparent"><title>${esc(list[i].label)} — click for its trend</title></circle>`;
     }
     return `<svg class="vp-subradar" viewBox="0 0 340 312" role="img" aria-label="${list.length} submetrics, radius = score, node size = weight">${svg}</svg>`;
   }
@@ -262,22 +268,25 @@ export function mountRadar3D(root, timeline) {
   function renderDrillTime() {
     if (!drillState) return;
     const { i, list, sub } = drillState, labels = meas.map(mm => mm.timestamp);
+    const run = (drillState.run != null) ? drillState.run : selected;   // the scan this drill is anchored to (the dot clicked)
     let values, color, name;
-    if (sub >= 0) { const sm = list[sub]; values = (sm.history && sm.history.length) ? sm.history : [clamp(num(sm.score), 0, 100)]; color = bandCss(clamp(num(sm.score), 0, 100)); name = sm.label; }
-    else { const key = axes[i].key; values = meas.map(mm => clamp(num(mm.scores[key]), 0, 100)); color = bandCss(clamp(num(meas[selected].scores[key]), 0, 100)); name = "Whole axis"; }
+    if (sub >= 0) { const sm = list[sub]; values = (sm.history && sm.history.length) ? sm.history : [clamp(num(sm.score), 0, 100)]; color = bandCss(clamp(scoreAtRun(sm, run), 0, 100)); name = sm.label; }
+    else { const key = axes[i].key; values = meas.map(mm => clamp(num(mm.scores[key]), 0, 100)); color = bandCss(clamp(num(meas[run].scores[key]), 0, 100)); name = "Whole axis"; }
     const useLabels = values.length === labels.length ? labels : labels.slice(-values.length);
+    const selOnLine = (values.length === labels.length) ? run : values.length - 1;   // keep the highlight valid if a submetric's history is shorter than the run set
     const tEl = drill.querySelector(".vp-drill-time");
     if (tEl) tEl.innerHTML = `<div class="vp-drill-lbl">Over time · ${esc(name)}${sub >= 0 ? ` <button class="vp-time-back" type="button">← whole axis</button>` : ""}</div>` +
-      mountainSVG(values, useLabels, selected, color) + `<div class="vp-time-exp">${explainerText(values, useLabels)}</div>`;
-    const lEl = drill.querySelector(".vp-drill-left"); if (lEl) lEl.innerHTML = subRadarSVG(list, sub);
+      mountainSVG(values, useLabels, selOnLine, color) + `<div class="vp-time-exp">${explainerText(values, useLabels)}</div>`;
+    const lEl = drill.querySelector(".vp-drill-left"); if (lEl) lEl.innerHTML = subRadarSVG(list, sub, run);
     drill.querySelectorAll(".vp-li").forEach((b, idx) => b.classList.toggle("active", idx === sub));
   }
   function showSeries(sub) { if (drillState) { drillState.sub = sub; renderDrillTime(); } }
 
-  function openDrill(i) {
+  function openDrill(i, runT) {
     const key = axes[i].key, list = (subm[key] || []).slice();
     if (!list.length) { tipPinned = true; showTip(i); return; }   // no drill data → quick brief
-    const m = meas[selected], s = clamp(num(m.scores[key]), 0, 100), det = (m.detail || {})[key] || {};
+    const t = (runT == null) ? selected : clamp(runT, 0, M - 1);
+    const m = meas[t], s = clamp(num(m.scores[key]), 0, 100), det = (m.detail || {})[key] || {};
     lastFocus = document.activeElement;
     const sys = new Set(); list.forEach(x => (x.evidenceSystems || []).forEach(v => sys.add(v)));
     const titleCase = s => String(s || "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
@@ -291,14 +300,14 @@ export function mountRadar3D(root, timeline) {
       (det.confidence ? `<span class="vp-conf">${esc(det.confidence.replace(/_/g, " "))}</span>` : "") +
       `</div>` +
       // spider next to the time-series mountain range (filled by renderDrillTime)
-      `<div class="vp-drill-body"><div class="vp-drill-left">${subRadarSVG(list, -1)}</div><div class="vp-drill-right vp-drill-time"></div></div>`;
+      `<div class="vp-drill-body"><div class="vp-drill-left">${subRadarSVG(list, -1, t)}</div><div class="vp-drill-right vp-drill-time"></div></div>`;
     let info = "";
     if (hl) info += `<div class="vp-drill-hl"><span class="vp-hl-tag">Highest lift</span><b>${esc(hlLabel)}</b></div>`;
     if (det.dayOneTactic) info += `<div class="vp-drill-act"><div class="vp-drill-lbl">Day-one action</div><p>${esc(det.dayOneTactic)}</p></div>`;
     if (sys.size) info += `<div class="vp-drill-prov"><div class="vp-drill-lbl">Where this comes from</div><div class="vp-prov-chips">${[...sys].slice(0, 14).map(v => `<span>${esc(v)}</span>`).join("")}</div></div>`;
     if (info) h += `<div class="vp-drill-info">${info}</div>`;
-    h += `<div class="vp-drill-lbl vp-list-lbl">Submetrics — click one for its own trend</div><div class="vp-drill-list">${list.map((x, idx) => {
-      const ss = clamp(num(x.score), 0, 100);
+    h += `<div class="vp-drill-lbl vp-list-lbl">Submetrics — click a node on the spider (or a row) for its own trend</div><div class="vp-drill-list">${list.map((x, idx) => {
+      const ss = clamp(scoreAtRun(x, t), 0, 100);
       return `<button class="vp-li" type="button" data-sub="${idx}"><span class="vp-li-n" style="background:${bandCss(ss)}">${idx + 1}</span>` +
         `<div class="vp-li-main"><div class="vp-li-top"><b>${esc(x.label)}</b><span class="vp-li-score" style="color:${bandCss(ss)}">${ss}</span></div>` +
         `<div class="vp-li-bar"><span style="width:${ss}%;background:${bandCss(ss)}"></span></div>` +
@@ -308,7 +317,7 @@ export function mountRadar3D(root, timeline) {
     if (det.whatCannotProve) h += `<div class="vp-drill-caveat"><b>Can't yet prove —</b> ${esc(det.whatCannotProve)}</div>`;
     h += `</div>`;
     drill.innerHTML = h;
-    drillState = { i, list, sub: -1 };
+    drillState = { i, list, sub: -1, run: t };
     renderDrillTime();
     drill.hidden = false;
     const xb = drill.querySelector(".vp-drill-x"); if (xb) xb.focus();
@@ -317,6 +326,8 @@ export function mountRadar3D(root, timeline) {
   drill.addEventListener("click", e => {
     if (e.target === drill || e.target.closest(".vp-drill-x")) { closeDrill(); return; }
     if (e.target.closest(".vp-time-back")) { showSeries(-1); return; }
+    const sn = e.target.closest(".vp-sub-node");                                // a dot on the sub-spider → that submetric's trend (toggle off if already open)
+    if (sn) { const si = +sn.dataset.sub; showSeries(drillState && drillState.sub === si ? -1 : si); return; }
     const row = e.target.closest(".vp-li"); if (row) { showSeries(+row.dataset.sub); }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !drill.hidden) closeDrill(); });
@@ -553,18 +564,30 @@ export function mountRadar3D(root, timeline) {
     let _downXY = null;
     renderer.domElement.addEventListener("pointerdown", e => { _downXY = [e.clientX, e.clientY]; });
     renderer.domElement.addEventListener("click", e => {
-      if (!headOn || fly) return;
-      if ((parseFloat(overlay.style.opacity) || 0) < 0.5) return;                          // only face-on
-      if (_downXY && (Math.abs(e.clientX - _downXY[0]) + Math.abs(e.clientY - _downXY[1])) > 6) return;   // was a drag
+      if (fly) return;                                                                       // mid-tween: ignore
+      if (_downXY && (Math.abs(e.clientX - _downXY[0]) + Math.abs(e.clientY - _downXY[1])) > 6) return;   // was a drag / orbit
       const r = renderer.domElement.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
-      const C = new THREE.Vector3(0, 0, zOf(selected)).project(camera), ccx = (C.x * .5 + .5) * r.width, ccy = (-C.y * .5 + .5) * r.height;
-      let best = -1, bd = 20;
-      for (let i = 0; i < N; i++) {
-        const v = vert(i, selected).project(camera), vx = (v.x * .5 + .5) * r.width, vy = (-v.y * .5 + .5) * r.height;
-        const d = Math.min(Math.hypot(vx - px, vy - py), distToSeg(px, py, ccx, ccy, vx, vy));
-        if (d < bd) { bd = d; best = i; }
+      const faceOn = (parseFloat(overlay.style.opacity) || 0) >= 0.5;                         // what the user actually sees
+      if (faceOn) {
+        // face-on: pick an axis on the selected slice (vertex or its vector) → drill at the selected scan
+        const C = new THREE.Vector3(0, 0, zOf(selected)).project(camera), ccx = (C.x * .5 + .5) * r.width, ccy = (-C.y * .5 + .5) * r.height;
+        let best = -1, bd = 20;
+        for (let i = 0; i < N; i++) {
+          const v = vert(i, selected).project(camera), vx = (v.x * .5 + .5) * r.width, vy = (-v.y * .5 + .5) * r.height;
+          const d = Math.min(Math.hypot(vx - px, vy - py), distToSeg(px, py, ccx, ccy, vx, vy));
+          if (d < bd) { bd = d; best = i; }
+        }
+        if (best >= 0) openDrill(best);
+      } else {
+        // orbit (3D tube): pick the nearest node across ALL scans → drill that axis at that scan
+        let best = null, bd = 16, bestZ = Infinity;
+        for (let t = 0; t < M; t++) for (let i = 0; i < N; i++) {
+          const v = vert(i, t).project(camera); if (v.z >= 1) continue;                       // behind the camera
+          const vx = (v.x * .5 + .5) * r.width, vy = (-v.y * .5 + .5) * r.height;
+          if (Math.hypot(vx - px, vy - py) < bd && v.z < bestZ) { best = { i, t }; bestZ = v.z; }
+        }
+        if (best) { select(best.t); openDrill(best.i, best.t); }
       }
-      if (best >= 0) openDrill(best);
     });
 
     function resize() { const w = Math.max(280, sceneEl.clientWidth), h = Math.max(320, sceneEl.clientHeight); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }

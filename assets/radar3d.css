@@ -133,6 +133,8 @@
   letter-spacing: .02em; padding: 3px 9px; text-transform: capitalize; }
 .vp-drill-body { align-items: start; display: grid; gap: 18px; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); margin-top: 16px; }
 .vp-subradar { display: block; height: auto; width: 100%; }
+.vp-sub-node { cursor: pointer; transition: fill .12s ease; }
+@media (hover: hover) and (pointer: fine) { .vp-sub-node:hover { fill: rgba(39, 95, 85, .12); } }
 .vp-drill-right { align-content: start; display: grid; gap: 14px; }
 .vp-drill-lbl { color: var(--muted); font-size: 10px; font-weight: 900; letter-spacing: .05em; margin-bottom: 5px; text-transform: uppercase; }
 .vp-drill-hl { align-items: baseline; display: flex; flex-wrap: wrap; gap: 8px; }
